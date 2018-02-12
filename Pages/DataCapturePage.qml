@@ -135,6 +135,16 @@ PageView {
 
     //--------------------------------------------------------------------------
 
+    Rectangle {
+        anchors {
+            fill: parent
+        }
+
+        color: "#fefefe"
+    }
+
+    //--------------------------------------------------------------------------
+
     ColumnLayout {
         anchors {
             fill: parent
@@ -204,8 +214,10 @@ PageView {
                     acceptedGestures: MapGestureArea.PinchGesture
                 }
 
-                Component.onCompleted: {
-                    activeMapType = supportedMapTypes[0];
+                activeMapType: supportedMapTypes[0]
+
+                onCopyrightLinkActivated: {
+                    Qt.openUrlExternally(link);
                 }
 
                 Rectangle {
@@ -239,11 +251,10 @@ PageView {
                 Layout.fillWidth: true
 
                 // ⇔ ⇕ ±
-                text: (coordinateInfo && coordinateInfo.ddm) ? "%1 %2 ± %3 m".arg(coordinateInfo.ddm.latitudeText).arg(coordinateInfo.ddm.longitudeText).arg(horizontalAccuracy) : ""
+                text: (coordinateInfo && coordinateInfo.ddm) ? qsTr("Lat <b>%1</b> Lon <b>%2</b> ± <b>%3</b> m").arg(coordinateInfo.ddm.latitudeText).arg(coordinateInfo.ddm.longitudeText).arg(horizontalAccuracy) : ""
                 color: coordinateColor
                 font {
                     pointSize: 14
-                    bold: true
                 }
                 horizontalAlignment: Text.AlignHCenter
             }
@@ -251,7 +262,7 @@ PageView {
             RowLayout {
                 Layout.fillWidth: true
 
-                Button {
+                RoundButton {
                     Layout.fillWidth: true
 
                     enabled: lastInsertId > 0

@@ -23,10 +23,14 @@ import ArcGIS.AppFramework 1.0
 
 FeatureButton {
     id: control
-    
+
+    implicitHeight: 50 * AppFramework.displayScaleFactor
+
     //--------------------------------------------------------------------------
 
     Component.onCompleted: {
+//        topPadding = symbol.size * symbol.scaleFactor * 2;
+//        bottomPadding = topPadding;
     }
     
     //--------------------------------------------------------------------------
@@ -39,6 +43,7 @@ FeatureButton {
         horizontalAlignment: Text.AlignHCenter
         verticalAlignment: Text.AlignVCenter
         elide: Text.ElideRight
+        wrapMode: Text.WrapAtWordBoundaryOrAnywhere
     }
 
     //--------------------------------------------------------------------------

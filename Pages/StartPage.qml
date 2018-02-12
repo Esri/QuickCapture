@@ -122,7 +122,7 @@ Rectangle {
             Layout.fillHeight: true
         }
 
-        Button {
+        RoundButton {
             Layout.fillWidth: true
             Layout.margins: 10 * AppFramework.displayScaleFactor
 
@@ -145,7 +145,7 @@ Rectangle {
             }
         }
 
-        Button {
+        RoundButton {
             Layout.fillWidth: true
             Layout.margins: 10 * AppFramework.displayScaleFactor
 
@@ -167,7 +167,7 @@ Rectangle {
             }
         }
 
-        Button {
+        RoundButton {
             Layout.fillWidth: true
             Layout.margins: 10 * AppFramework.displayScaleFactor
 

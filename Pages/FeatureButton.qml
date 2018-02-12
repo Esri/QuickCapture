@@ -33,7 +33,7 @@ Button {
     property Symbol symbol
     property color textColor: "black"
 
-    property color downTextColor: "darkgrey"
+    property color downTextColor: textColor
     property color downBorderColor: "darkgrey"
 
     //--------------------------------------------------------------------------
@@ -43,15 +43,6 @@ Button {
     //--------------------------------------------------------------------------
 
     Component.onCompleted: {
-        textColor = HelpersLib.contrastColor(symbol.color);
-
-        if (options.textColor) {
-            textColor = options.textColor;
-        }
-
-        if (options.textColor) {
-            textColor = options.textColor;
-        }
 
         if (options.color) {
             background.color = options.color;
@@ -64,11 +55,26 @@ Button {
         if (options.outlineWidth) {
             background.border.width = options.outlineWidth * symbol.scaleFactor;
         }
+
+        textColor = HelpersLib.contrastColor(background.color);
+
+        if (options.textColor) {
+            textColor = options.textColor;
+        }
+
+        if (options.textColor) {
+            textColor = options.textColor;
+        }
     }
 
     //--------------------------------------------------------------------------
 
     text: template.name
+
+    font {
+        pointSize: 14
+        bold: control.down
+    }
     
     //--------------------------------------------------------------------------
 
@@ -80,7 +86,7 @@ Button {
         opacity: enabled ? 1 : 0.3
         border {
             color: control.down ? downBorderColor : symbol.outlineColor
-            width: symbol.outlineWidth * symbol.scaleFactor
+            width: symbol.outlineWidth * symbol.scaleFactor * control.down ? 1 : 1.3
         }
 
         radius: 5 * AppFramework.displayScaleFactor

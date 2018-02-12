@@ -82,7 +82,27 @@ PageView {
                 Layout.fillHeight: true
             }
 
-            Button {
+
+            RoundButton {
+                Layout.fillWidth: true
+
+                enabled: dataService.points > 0
+                text: qsTr("Upload %1 data points").arg(dataService.points)
+
+                onClicked: {
+                    if (dataService.portal.signedIn) {
+                        dataService.upload();
+                    } else {
+                        signedInCallback = function () {
+                            dataService.upload();
+                        }
+
+                        dataService.portal.autoSignIn();
+                    }
+                }
+            }
+
+            RoundButton {
                 Layout.fillWidth: true
 
                 enabled: dataService.points > 0
@@ -93,7 +113,7 @@ PageView {
                 }
             }
 
-            Button {
+            RoundButton {
                 Layout.fillWidth: true
 
                 text: qsTr("Delete this project")
@@ -105,7 +125,7 @@ PageView {
             }
 
             /*
-            Button {
+            RoundButton {
                 Layout.fillWidth: true
 
                 text: qsTr("Update project configuration")

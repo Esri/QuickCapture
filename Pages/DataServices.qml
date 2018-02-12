@@ -42,6 +42,8 @@ Item {
 
     SortedListModel {
         id: model
+
+        sortProperty: "title"
     }
 
     //--------------------------------------------------------------------------
@@ -72,9 +74,11 @@ Item {
 //            itemsModel.sortItems();
 
             if (response.nextStart > 0) {
+                model.sort();
                 search(response.nextStart);
             } else {
                 busy = false;
+                model.sort();
                 searchCompleted();
             }
         }
@@ -106,6 +110,8 @@ Item {
 
             model.append(itemInfo);
         });
+
+        model.sort();
 
         if (online && portal.signedIn) {
             startSearch();

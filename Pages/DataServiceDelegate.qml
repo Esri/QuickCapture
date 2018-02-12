@@ -149,7 +149,7 @@ Item {
                     text: title
                     font {
                         pointSize: 16
-                        bold: false
+                        bold: mouseArea.pressed
                         italic: !local
                     }
                     wrapMode: Text.WrapAtWordBoundaryOrAnywhere

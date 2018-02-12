@@ -26,13 +26,10 @@ FeatureButton {
     
     //--------------------------------------------------------------------------
 
-    contentItem:
-        ColumnLayout {
+    contentItem: ColumnLayout {
         clip: true
 
         Item {
-            //            Layout.fillWidth: true
-            //            Layout.fillHeight: true
             Layout.preferredWidth: symbol.imageWidth * AppFramework.displayScaleFactor
             Layout.preferredHeight: symbol.imageWidth * AppFramework.displayScaleFactor
             Layout.alignment: Qt.AlignHCenter

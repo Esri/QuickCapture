@@ -1,0 +1,59 @@
+{
+    "access": "org",
+    "accessInformation": null,
+    "appCategories": [
+    ],
+    "avgRating": 0,
+    "banner": null,
+    "categories": [
+    ],
+    "commentsEnabled": true,
+    "created": 1518392177000,
+    "culture": "en-au",
+    "description": "\n<p style=' margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;'>Rapid data capture for ArcGIS</p>",
+    "documentation": null,
+    "extent": [
+    ],
+    "guid": null,
+    "id": "3e87f858b4dd4cd9b4578fcdc7b9f17d",
+    "industries": [
+    ],
+    "itemControl": "admin",
+    "languages": [
+    ],
+    "largeThumbnail": null,
+    "licenseInfo": null,
+    "listed": false,
+    "modified": 1518416054000,
+    "name": "3e87f858b4dd4cd9b4578fcdc7b9f17d.zip",
+    "numComments": 3,
+    "numRatings": 0,
+    "numViews": 10,
+    "owner": "appstudio_apps",
+    "ownerFolder": null,
+    "properties": null,
+    "protected": false,
+    "proxyFilter": null,
+    "scoreCompleteness": 33,
+    "screenshots": [
+    ],
+    "size": 829628,
+    "snippet": "Rapid data capture for ArcGIS",
+    "spatialReference": null,
+    "tags": [
+    ],
+    "thumbnail": "thumbnail/thumbnail.png",
+    "title": "QuickCapture",
+    "type": "Native Application",
+    "typeKeywords": [
+        "API_QML",
+        "App",
+        "Application",
+        "AppStudio",
+        "Configuration",
+        "Native",
+        "qml",
+        "Registered App"
+    ],
+    "url": null
+}

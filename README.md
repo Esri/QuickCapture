@@ -1,2 +1,3 @@
 # QuickCapture
-QuickCapture for ArcGIS app
+QuickCapture for ArcGIS
+

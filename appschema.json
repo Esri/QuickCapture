@@ -1,0 +1,18 @@
+{
+    "propertiesInfo": {
+        "title": "QuickCapture",
+        "categoryInfos": [
+            {
+                "title": "General",
+                "propertyInfos": [
+                    {
+                        "type": "string",
+                        "name": "fontFamily",
+                        "label": "Font Family",
+                        "placeholder": "Font family name"
+                    }
+                ]
+            }
+        ]
+    }
+}

@@ -205,16 +205,16 @@ PageView {
                 visible: showMap
 
                 plugin: Plugin {
-                    preferred: ["ArcGIS"]
+                    preferred: ["AppStudio", "ArcGIS", "esri"]
                 }
 
-                zoomLevel: 19
+                zoomLevel: 18
 
                 gesture {
                     acceptedGestures: MapGestureArea.PinchGesture
                 }
 
-                activeMapType: supportedMapTypes[0]
+                //activeMapType: supportedMapTypes[0]
 
                 onCopyrightLinkActivated: {
                     Qt.openUrlExternally(link);
@@ -257,6 +257,14 @@ PageView {
                     pointSize: 14
                 }
                 horizontalAlignment: Text.AlignHCenter
+
+                MouseArea {
+                    anchors.fill: parent
+
+                    onPressAndHold: {
+                        map.visible = !map.visible;
+                    }
+                }
             }
 
             RowLayout {

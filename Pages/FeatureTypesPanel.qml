@@ -27,6 +27,7 @@ GridLayout {
     //--------------------------------------------------------------------------
 
     property DataService dataService
+    property real columnWidth: (width - (columns - 1) * columnSpacing) / columns
 
     //--------------------------------------------------------------------------
 
@@ -139,7 +140,8 @@ GridLayout {
                                                           symbol: symbol
                                                       });
 
-        buttonItem.Layout.fillWidth = true;
+        //buttonItem.Layout.fillWidth = true;
+        buttonItem.Layout.preferredWidth = Qt.binding(function() { return columnWidth; });
         buttonItem.Layout.fillHeight = true;
         buttonItem.Layout.columnSpan = 1;
 

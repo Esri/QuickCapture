@@ -20,7 +20,6 @@ import QtQuick.Controls 2.2
 
 import ArcGIS.AppFramework 1.0
 
-
 import "HelpersLib.js" as HelpersLib
 
 
@@ -44,12 +43,6 @@ Button {
     //--------------------------------------------------------------------------
 
     Component.onCompleted: {
-//        if (options.backgroundColor) {
-//            background.color = options.backgroundColor;
-//            background.border.width = 5;
-//            background.border.color = "yellow";
-//        }
-
         textColor = HelpersLib.contrastColor(symbol.color);
 
         if (options.textColor) {
@@ -80,8 +73,8 @@ Button {
     //--------------------------------------------------------------------------
 
     background: Rectangle {
-        implicitWidth: 100
-        implicitHeight: 40
+        implicitWidth: 100 * AppFramework.displayScaleFactor
+        implicitHeight: 40 * AppFramework.displayScaleFactor
 
         color: symbol.color
         opacity: enabled ? 1 : 0.3

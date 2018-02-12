@@ -28,151 +28,168 @@ Item {
     id: delegate
 
     property alias mouseArea: mouseArea
-    property alias background: background
-    property alias thumbnailSource: thumbnailImage.source
-    property alias titleText: titleText
-    property alias rowLayout: rowLayout
 
     signal clicked(var itemInfo);
     signal doubleClicked(var itemInfo);
     signal pressAndHold(var itemInfo);
 
-    property var itemInfo: GridView.view.model.get(index)
+    property var itemInfo: ListView.view.model.get(index)
 
-    width: GridView.view.cellWidth
-    height: GridView.view.cellHeight
+    width: ListView.view.width
+    height: layout.height + layout.anchors.margins * 2
+
+    //--------------------------------------------------------------------------
+
+    MouseArea {
+        id: mouseArea
+
+        anchors.fill: parent
+        hoverEnabled: true
+
+        onClicked: {
+            delegate.clicked(delegate.itemInfo);
+        }
+
+        onDoubleClicked: {
+            delegate.doubleClicked(delegate.itemInfo);
+        }
+
+        onPressAndHold: {
+            delegate.pressAndHold(delegate.itemInfo);
+        }
+    }
 
     //--------------------------------------------------------------------------
 
     Rectangle {
-        id: background
-
-        //        anchors {
-        //            fill: parent
-        //            margins: 5 * AppFramework.displayScaleFactor
-        //        }
-
-        Component.onCompleted: {
-            if (delegate.GridView.view.dynamicSpacing) {
-                background.anchors.centerIn = parent;
-                background.width = delegate.GridView.view.cellSize;
-                background.height = background.width;
-            } else {
-                background.anchors.fill = parent;
-                background.anchors.margins = 5 * AppFramework.displayScaleFactor;
-            }
+        anchors {
+            fill: parent
+            margins: 2 * AppFramework.displayScaleFactor
         }
-        
-        color: "#404040"
+
+        color: "white"
         border {
-            width: 1
-            color: "#10ffffff"
+            width: 1 * AppFramework.displayScaleFactor
+            color: "darkgrey"
         }
-        radius: 2 * AppFramework.displayScaleFactor
-        
-        MouseArea {
-            id: mouseArea
+        radius: 5 * AppFramework.displayScaleFactor
+    }
 
-            anchors.fill: parent
+    //--------------------------------------------------------------------------
 
-            onClicked: {
-                delegate.clicked(delegate.itemInfo);
-            }
+    ColumnLayout {
+        id: layout
 
-            onDoubleClicked: {
-                delegate.doubleClicked(delegate.itemInfo);
-            }
-
-            onPressAndHold: {
-                delegate.pressAndHold(delegate.itemInfo);
-            }
-
-            onPressed: {
-                delegate.scale = 1.05;
-            }
-
-            onReleased:  {
-                delegate.scale = 1;
-            }
+        anchors {
+            top: parent.top
+            left: parent.left
+            right: parent.right
+            margins: 5 * AppFramework.displayScaleFactor
         }
 
-        Image {
-            id: thumbnailImage
-
-            anchors {
-                left: parent.left
-                right: parent.right
-                top: parent.top
-                margins: 1 * AppFramework.displayScaleFactor
-            }
-
-            height: width * 133/200
-            
-            source: thumbnailUrl
-            fillMode: Image.PreserveAspectFit
-            cache: false
-
-            Rectangle {
-                anchors.fill: parent
-                color: "transparent"
-                border {
-                    width: 1
-                    color: "#10000000"
-                }
-            }
-
-            Item {
-                anchors.centerIn: parent
-
-                visible: portal.signedIn
-                width: parent.height * 0.75
-                height: width
-
-                Image {
-                    anchors {
-                        fill: parent
-                    }
-
-                    source: local ? updateAvailable ? "images/data-sync.png" : "" : "images/data-download.png"
-                    fillMode: Image.PreserveAspectFit
-                }
-            }
-
-        }
-        
-        //--------------------------------------------------------------------------
+        scale: mouseArea.pressed ? 0.9 : 1
 
         RowLayout {
-            id: rowLayout
+            Layout.fillWidth: true
+            Layout.margins: 5 * AppFramework.displayScaleFactor
 
-            anchors {
-                left: parent.left
-                right: parent.right
-                top: thumbnailImage.bottom
-                bottom: parent.bottom
-                margins: 3 * AppFramework.displayScaleFactor
-            }
+            Item {
+                Layout.preferredWidth: 100 * AppFramework.displayScaleFactor
+                Layout.preferredHeight: 66 * AppFramework.displayScaleFactor
+                //Layout.alignment: Qt.AlignTop
+                //                Layout.margins: 3 * AppFramework.displayScaleFactor
 
-            Text {
-                id: titleText
-
-                Layout.fillWidth: true
-                Layout.fillHeight: true
-
-                text: title
-                font {
-                    pixelSize: rowLayout.height / 2 * 0.72
-                    bold: false
-                    italic: !local
+                Rectangle {
+                    anchors.fill: parent
+                    color: "darkgrey"
                 }
-                wrapMode: Text.WrapAtWordBoundaryOrAnywhere
-                maximumLineCount: 2
-                horizontalAlignment: Text.AlignHCenter
-                verticalAlignment: Text.AlignVCenter
-                elide: Text.ElideRight
-                color: "#fefefe"
+
+                Image {
+                    anchors.fill: parent
+
+                    source: thumbnailUrl
+                    fillMode: Image.PreserveAspectFit
+                    cache: false
+
+                    Rectangle {
+                        anchors.fill: parent
+                        color: "transparent"
+                        border {
+                            width: 1
+                            color: "#10000000"
+                        }
+                    }
+
+                    Item {
+                        anchors.centerIn: parent
+
+                        visible: portal.signedIn
+                        width: parent.height * 0.75
+                        height: width
+
+                        Image {
+                            anchors {
+                                fill: parent
+                            }
+
+                            source: local ? updateAvailable ? "images/data-sync.png" : "" : "images/data-download.png"
+                            fillMode: Image.PreserveAspectFit
+                        }
+                    }
+                }
             }
 
+            //----------------------------------------------------------------------
+
+            ColumnLayout {
+
+                Text {
+                    Layout.fillWidth: true
+
+                    text: title
+                    font {
+                        pointSize: 16
+                        bold: false
+                        italic: !local
+                    }
+                    wrapMode: Text.WrapAtWordBoundaryOrAnywhere
+                    maximumLineCount: 2
+                    horizontalAlignment: Text.AlignHCenter
+                    verticalAlignment: Text.AlignVCenter
+                    elide: Text.ElideRight
+                    color: "black"
+                }
+
+                Text {
+                    id: snippetText
+
+                    Layout.fillWidth: true
+
+                    text: snippet || ""
+                    visible: text.length > 0
+
+                    font {
+                        pointSize: 12
+                    }
+                    wrapMode: Text.WrapAtWordBoundaryOrAnywhere
+                    horizontalAlignment: Text.AlignHCenter
+                    verticalAlignment: Text.AlignVCenter
+                    elide: Text.ElideRight
+                    color: "black"
+                    maximumLineCount: 3
+                }
+            }
+
+            StyledImageButton {
+                Layout.preferredWidth: 35 * AppFramework.displayScaleFactor
+                Layout.preferredHeight: Layout.preferredWidth
+
+                source: "images/information.png"
+
+                onClicked: {
+                    delegate.pressAndHold(delegate.itemInfo);
+                }
+            }
         }
     }
 

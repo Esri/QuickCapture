@@ -66,20 +66,28 @@ PageView {
 
     //--------------------------------------------------------------------------
 
-    ColumnLayout {
+    Rectangle {
         anchors {
             fill: parent
         }
 
-        spacing: 5 * AppFramework.displayScaleFactor
+        color: "lightgrey"
 
-        DataServicesView {
-            Layout.fillWidth: true
-            Layout.fillHeight: true
-            Layout.margins: 5 * AppFramework.displayScaleFactor
+        ColumnLayout {
+            anchors {
+                fill: parent
+            }
 
-            model: dataServices.model
-            delegate: dataServiceDelegate
+            spacing: 5 * AppFramework.displayScaleFactor
+
+            DataServicesView {
+                Layout.fillWidth: true
+                Layout.fillHeight: true
+                Layout.margins: 5 * AppFramework.displayScaleFactor
+
+                model: dataServices.model
+                delegate: dataServiceDelegate
+            }
         }
     }
 

@@ -26,8 +26,13 @@ import "Pages"
 App {
     id: app
 
-    width: 400
-    height: 640
+    //--------------------------------------------------------------------------
+
+    readonly property real windowScaleFactor: !(Qt.platform.os === "windows" || Qt.platform.os === "unix" || Qt.application.os === "linux") ? 1 : AppFramework.displayScaleFactor
+
+    width: 400 * windowScaleFactor
+    height: 650 * windowScaleFactor
+
 
     //--------------------------------------------------------------------------
 

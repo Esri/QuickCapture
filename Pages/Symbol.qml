@@ -27,7 +27,7 @@ Item {
     property real angle
     property string style
     property real size
-    property color color: "lightgrey"
+    property color color: "#fafafa"
 
     property string outlineType
     property string outlineStyle

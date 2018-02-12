@@ -28,6 +28,7 @@ Item {
     property var options
     property alias symbol: symbol
     property alias symbolInfo: symbol.symbolInfo
+    property alias textColor: nameText.color
     
     //--------------------------------------------------------------------------
 

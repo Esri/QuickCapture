@@ -71,7 +71,7 @@ PageView {
             fill: parent
         }
 
-        color: "lightgrey"
+        color: "silver"
 
         ColumnLayout {
             anchors {

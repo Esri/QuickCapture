@@ -20,6 +20,7 @@ import QtQuick.Controls 2.2
 
 import ArcGIS.AppFramework 1.0
 
+import "HelpersLib.js" as HelpersLib
 
 GridLayout {
     id: panel
@@ -27,7 +28,9 @@ GridLayout {
     //--------------------------------------------------------------------------
 
     property DataService dataService
-    property real columnWidth: (width - (columns - 1) * columnSpacing) / columns
+    property Rectangle background
+
+    readonly property real columnWidth: (width - (columns - 1) * columnSpacing) / columns
 
     //--------------------------------------------------------------------------
 
@@ -161,6 +164,7 @@ GridLayout {
         id: layerItemComponent
 
         LayerItem {
+            textColor: HelpersLib.contrastColor(background.color)
         }
     }
 
@@ -170,6 +174,7 @@ GridLayout {
         id: typeItemComponent
 
         TypeItem {
+            textColor: HelpersLib.contrastColor(background.color)
         }
     }
 

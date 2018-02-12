@@ -58,6 +58,10 @@ PageView {
         if (options.columns) {
             featureTypesPanel.columns = options.columns;
         }
+
+        if (options.backgroundColor) {
+            backgroundFill.color = options.backgroundColor;
+        }
     }
 
     //--------------------------------------------------------------------------
@@ -105,7 +109,7 @@ PageView {
 
         ColorOverlay {
             anchors.fill: uploadImage
-            color: dataService.uploading ? "#00b2ff" : "white"
+            color: dataService.uploading ? "#00b2ff" : theme.pageHeaderTextColor
             source: uploadImage
         }
 
@@ -116,7 +120,7 @@ PageView {
             verticalAlignment: Text.AlignBottom
 
             text: "%1".arg(dataService.points)
-            color: "white"
+            color: theme.pageHeaderTextColor
             font {
                 pointSize: 10
             }
@@ -136,11 +140,14 @@ PageView {
     //--------------------------------------------------------------------------
 
     Rectangle {
+        id: backgroundFill
+
         anchors {
             fill: parent
         }
 
-        color: "#fefefe"
+        //color: "#fefefe"
+        color: "silver"
     }
 
     //--------------------------------------------------------------------------
@@ -167,6 +174,7 @@ PageView {
                 width: scrollView.width
 
                 dataService: page.dataService
+                background: backgroundFill
 
                 onAddFeature: {
                     lastInsertId = dataService.insertFeature(positionSource.position, layerId, template.prototype.attributes);

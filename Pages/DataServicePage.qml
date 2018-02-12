@@ -82,11 +82,10 @@ PageView {
                 Layout.fillHeight: true
             }
 
-
-            RoundButton {
+            Button {
                 Layout.fillWidth: true
 
-                enabled: dataService.points > 0
+                enabled: dataService.points > 0 && !dataService.uploading
                 text: qsTr("Upload %1 data points").arg(dataService.points)
 
                 onClicked: {
@@ -102,23 +101,24 @@ PageView {
                 }
             }
 
-            RoundButton {
+            DelayButton {
                 Layout.fillWidth: true
 
-                enabled: dataService.points > 0
+                enabled: dataService.points > 0 && !dataService.uploading
                 text: qsTr("Delete %1 data points").arg(dataService.points)
 
-                onClicked: {
+                onActivated: {
                     dataService.deleteAll();
                 }
             }
 
-            RoundButton {
+            DelayButton {
                 Layout.fillWidth: true
 
+                enabled: !dataService.uploading
                 text: qsTr("Delete this project")
 
-                onClicked: {
+                onActivated: {
                     dataService.deleteFiles();
                     back();
                 }
@@ -144,11 +144,26 @@ PageView {
             }
             */
 
+            Flow {
+                Layout.fillWidth: true
+                spacing: 10 * AppFramework.displayScaleFactor
+
+                Text {
+                    text: qsTr("Owner: <b>%1</b>").arg(dataService.itemInfo.owner)
+                    color: theme.textColor
+                }
+
+                Text {
+                    text: qsTr("Modifed: <b>%1</b>").arg(new Date(dataService.itemInfo.modified))
+                    color: theme.textColor
+                }
+            }
+
             Text {
                 Layout.fillWidth: true
 
                 text: '<a href="%1/home/item.html?id=%2">%2</a>'.arg(dataService.portal.portalUrl).arg(dataService.itemInfo.id);
-                color: "white"
+                color: theme.textColor
                 linkColor: color
                 wrapMode: Text.WrapAtWordBoundaryOrAnywhere
                 horizontalAlignment: Text.AlignHCenter

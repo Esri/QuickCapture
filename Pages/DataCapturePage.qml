@@ -49,7 +49,7 @@ PageView {
     Component.onCompleted: {
         var options = dataService.parseOptions(dataService.itemInfo.accessInformation);
 
-        console.log("Service options:", JSON.stringify(options, undefined, 2));
+        console.log("Project options:", JSON.stringify(options, undefined, 2));
 
         if (options.showMap) {
             showMap = options.showMap;
@@ -57,6 +57,14 @@ PageView {
 
         if (options.columns) {
             featureTypesPanel.columns = options.columns;
+        }
+
+        if (options.columnSpacing) {
+            featureTypesPanel.columnSpacing = options.columnSoacing * AppFramework.displayScaleFactor;
+        }
+
+        if (options.rowSpacing) {
+            featureTypesPanel.rowSpacing = options.rowSoacing * AppFramework.displayScaleFactor;
         }
 
         if (options.backgroundColor) {
@@ -75,9 +83,9 @@ PageView {
             if (position.latitudeValid && position.longitudeValid) {
                 coordinate = position.coordinate;
                 horizontalAccuracy = Math.round(position.horizontalAccuracy);
-                if (horizontalAccuracy < 10) {
+                if (horizontalAccuracy <= 10) {
                     coordinateColor = "white";
-                } else if (horizontalAccuracy < 100) {
+                } else if (horizontalAccuracy <= 100) {
                     coordinateColor = "orange";
                 } else {
                     coordinateColor = "red";

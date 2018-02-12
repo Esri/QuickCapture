@@ -67,7 +67,7 @@ PageView {
             Text {
                 Layout.fillWidth: true
 
-                text: dataService.itemInfo.description || ""
+                text: dataService.itemInfo.description || (dataService.itemInfo.snippet || "")
                 color: "white"
                 wrapMode: Text.WrapAtWordBoundaryOrAnywhere
                 horizontalAlignment: Text.AlignHCenter
@@ -86,7 +86,7 @@ PageView {
                 Layout.fillWidth: true
 
                 enabled: dataService.points > 0 && !dataService.uploading
-                text: qsTr("Upload %1 data points").arg(dataService.points)
+                text: qsTr("Upload data - %n feature(s)", "", dataService.points)
 
                 onClicked: {
                     if (dataService.portal.signedIn) {
@@ -105,7 +105,7 @@ PageView {
                 Layout.fillWidth: true
 
                 enabled: dataService.points > 0 && !dataService.uploading
-                text: qsTr("Delete %1 data points").arg(dataService.points)
+                text: qsTr("Delete all local data - %n feature(s)", "", dataService.points)
 
                 onActivated: {
                     dataService.deleteAll();
@@ -144,6 +144,7 @@ PageView {
             }
             */
 
+            /*
             Flow {
                 Layout.fillWidth: true
                 spacing: 10 * AppFramework.displayScaleFactor
@@ -152,11 +153,15 @@ PageView {
                     text: qsTr("Owner: <b>%1</b>").arg(dataService.itemInfo.owner)
                     color: theme.textColor
                 }
+            }
+            */
 
-                Text {
-                    text: qsTr("Modifed: <b>%1</b>").arg(new Date(dataService.itemInfo.modified))
-                    color: theme.textColor
-                }
+            Text {
+                Layout.fillWidth: true
+
+                text: qsTr("Modifed: <b>%1</b>").arg(new Date(dataService.itemInfo.modified))
+                color: theme.textColor
+                horizontalAlignment: Text.AlignHCenter
             }
 
             Text {

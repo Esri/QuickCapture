@@ -1,12 +1,12 @@
 {
     "arcgisRuntime": 0,
     "capabilities": {
-        "audio": false,
+        "audio": true,
         "backgroundLocation": false,
         "biometricAuthentication": false,
         "bluetooth": false,
         "camera": false,
-        "fileSharing": false,
+        "fileSharing": true,
         "highAccuracyLocation": false,
         "localnotification": false,
         "location": true,
@@ -53,7 +53,7 @@
         },
         "enableHighDpi": true,
         "phone": {
-            "landscape": true,
+            "landscape": false,
             "portrait": true,
             "showStatusBar": true
         },

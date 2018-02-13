@@ -16,6 +16,7 @@
 
 import QtQuick 2.9
 import QtQuick.Layouts 1.3
+import QtQuick.Controls 1.4 as Legacy
 import QtQuick.Controls 2.2
 import QtPositioning 5.8
 import QtLocation 5.9
@@ -102,45 +103,75 @@ PageView {
         parent: page.actionItem
         anchors.fill: parent
 
-        opacity: dataService.points > 0 ? 1 : 0.3
 
-        Image {
-            id: uploadImage
-
-            anchors.fill: parent
-            visible: false
-
-            source: "images/upload-data.png"
-            fillMode: Image.PreserveAspectFit
-            verticalAlignment: Image.AlignTop
-        }
-
-        ColorOverlay {
-            anchors.fill: uploadImage
-            color: dataService.uploading ? "#00b2ff" : theme.pageHeaderTextColor
-            source: uploadImage
-        }
-
-        Text {
+        Item {
             anchors.fill: parent
 
-            horizontalAlignment: Text.AlignHCenter
-            verticalAlignment: Text.AlignBottom
+            opacity: dataService.points > 0 ? 1 : 0.3
+            visible: !dataService.uploading
 
-            text: "%1".arg(dataService.points)
-            color: theme.pageHeaderTextColor
-            font {
-                pointSize: 10
+            Image {
+                id: uploadImage
+
+                anchors.fill: parent
+                visible: false
+
+                source: "images/upload-data.png"
+                fillMode: Image.PreserveAspectFit
+                verticalAlignment: Image.AlignTop
+            }
+
+            ColorOverlay {
+                anchors.fill: uploadImage
+                color: dataService.uploading ? "#00b2ff" : theme.pageHeaderTextColor
+                source: uploadImage
+            }
+
+            Text {
+                anchors.fill: parent
+
+                horizontalAlignment: Text.AlignHCenter
+                verticalAlignment: Text.AlignBottom
+
+                text: "%1".arg(dataService.points)
+                color: theme.pageHeaderTextColor
+                font {
+                    pointSize: 10
+                }
+            }
+
+            MouseArea {
+                anchors.fill: parent
+
+                enabled: !portal.busy && !dataService.uploading && dataService.points > 0
+
+                onClicked: {
+                    upload();
+                }
             }
         }
 
-        MouseArea {
+        Item {
             anchors.fill: parent
 
-            enabled: !portal.busy && !dataService.uploading && dataService.points > 0
+            visible: dataService.uploading
 
-            onClicked: {
-                upload();
+            Legacy.BusyIndicator {
+                anchors.fill: parent
+                running: dataService.uploading
+            }
+
+            Text {
+                anchors.fill: parent
+
+                horizontalAlignment: Text.AlignHCenter
+                verticalAlignment: Text.AlignVCenter
+
+                text: "%1".arg(dataService.points)
+                color: theme.pageHeaderTextColor
+                font {
+                    pointSize: 10
+                }
             }
         }
     }

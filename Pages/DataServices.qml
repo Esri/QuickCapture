@@ -33,6 +33,7 @@ Item {
 
     signal searchCompleted();
     signal searchResult(var itemInfo)
+    signal refreshComplete()
 
     //--------------------------------------------------------------------------
 
@@ -80,6 +81,7 @@ Item {
                 busy = false;
                 model.sort();
                 searchCompleted();
+                refreshComplete();
             }
         }
     }
@@ -115,6 +117,8 @@ Item {
 
         if (online && portal.signedIn) {
             startSearch();
+        } else {
+            refreshComplete();
         }
     }
 

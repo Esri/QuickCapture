@@ -34,6 +34,7 @@ PageView {
     property alias dataService: dataService
     property bool infoPage: false
     property var signedInCallback
+    property bool refreshOnce: true
 
 
     //--------------------------------------------------------------------------
@@ -176,6 +177,17 @@ PageView {
         portal: page.portal
         online: page.online
         path: dataFolder.path
+
+        onRefreshComplete: {
+            if (!model.count && !online && refreshOnce) {
+                refreshOnce = false;
+                signedInCallback = function() {
+                    page.online = true;
+                    page.update();
+                };
+                portal.autoSignIn();
+            }
+        }
     }
 
     //--------------------------------------------------------------------------

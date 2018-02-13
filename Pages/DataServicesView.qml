@@ -19,18 +19,18 @@ import QtQuick.Controls 1.4
 
 import ArcGIS.AppFramework 1.0
 
+import "../Controls"
+
 ListView {
     id: listView
 
     //--------------------------------------------------------------------------
 
-    //property alias refreshHeader: refreshHeader
+    property alias refreshHeader: refreshHeader
 
     //--------------------------------------------------------------------------
 
-//    signal clicked()
-//    signal pressAndHold()
-//    signal refresh()
+    signal refresh();
 
     //--------------------------------------------------------------------------
 
@@ -39,13 +39,14 @@ ListView {
 
     //--------------------------------------------------------------------------
 
-    //    RefreshHeader {
-    //        id: refreshHeader
+    RefreshHeader {
+        id: refreshHeader
 
-    //        onRefresh: {
-    //            gridView.refresh();
-    //        }
-    //    }
+        onRefresh: {
+            listView.refresh();
+        }
+    }
+
 
     //--------------------------------------------------------------------------
 }

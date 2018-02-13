@@ -145,6 +145,7 @@ Rectangle {
             }
         }
 
+        /*
         RoundButton {
             Layout.fillWidth: true
             Layout.margins: 10 * AppFramework.displayScaleFactor
@@ -166,6 +167,7 @@ Rectangle {
                 }
             }
         }
+        */
 
         RoundButton {
             Layout.fillWidth: true

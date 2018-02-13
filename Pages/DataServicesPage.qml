@@ -33,6 +33,8 @@ PageView {
     property bool online
     property alias dataService: dataService
     property bool infoPage: false
+    property var signedInCallback
+
 
     //--------------------------------------------------------------------------
 
@@ -60,6 +62,19 @@ PageView {
 
     //--------------------------------------------------------------------------
 
+    Connections {
+        target: dataService.portal
+
+        onSignedInChanged: {
+            if (dataService.portal.signedIn && signedInCallback) {
+                signedInCallback();
+                signedInCallback = null;
+            }
+        }
+    }
+
+    //--------------------------------------------------------------------------
+
     FileFolder {
         id: dataFolder
     }
@@ -71,7 +86,7 @@ PageView {
             fill: parent
         }
 
-        color: "silver"
+        color: "ghostwhite" //"silver"
 
         ColumnLayout {
             anchors {
@@ -87,6 +102,19 @@ PageView {
 
                 model: dataServices.model
                 delegate: dataServiceDelegate
+
+                onRefresh: {
+                    if (portal.signedIn) {
+                        online = true;
+                        page.update();
+                    } else {
+                        signedInCallback = function() {
+                            online = true;
+                            page.update();
+                        };
+                        portal.autoSignIn();
+                    }
+                }
             }
         }
     }

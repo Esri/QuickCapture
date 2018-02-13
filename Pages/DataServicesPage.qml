@@ -106,11 +106,11 @@ PageView {
 
                 onRefresh: {
                     if (portal.signedIn) {
-                        online = true;
+                        page.online = true;
                         page.update();
                     } else {
                         signedInCallback = function() {
-                            online = true;
+                            page.online = true;
                             page.update();
                         };
                         portal.autoSignIn();
@@ -180,12 +180,17 @@ PageView {
 
         onRefreshComplete: {
             if (!model.count && !online && refreshOnce) {
-                refreshOnce = false;
-                signedInCallback = function() {
+                if (dataService.portal.signedIn) {
                     page.online = true;
                     page.update();
-                };
-                portal.autoSignIn();
+                } else {
+                    refreshOnce = false;
+                    signedInCallback = function() {
+                        page.online = true;
+                        page.update();
+                    };
+                    portal.autoSignIn();
+                }
             }
         }
     }

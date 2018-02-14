@@ -59,7 +59,7 @@ Item {
 
         console.log("deleteItem", itemId);
 
-        deleteRequest.sendRequest({});
+        deleteRequest.sendRequest();
     }
 
     function publishItem(publishData) {
@@ -69,16 +69,16 @@ Item {
 
     function requestInfo(user) {
         if (user) {
-            userItemRequest.sendRequest({});
+            userItemRequest.sendRequest();
         } else {
-            infoRequest.sendRequest({});
+            infoRequest.sendRequest();
         }
     }
 
     function download(filePath) {
         dataRequest.responsePath = filePath;
 
-        dataRequest.sendRequest({});
+        dataRequest.sendRequest();
     }
 
     function downloadThumbnail(path) {
@@ -94,7 +94,7 @@ Item {
         thumbnailRequest.responsePath = path;
         thumbnailRequest.url = contentUrl + "/info/" + itemInfo.thumbnail;
 
-        thumbnailRequest.sendRequest({});
+        thumbnailRequest.sendRequest();
 
         return true;
     }
@@ -248,6 +248,7 @@ Item {
 //        url: userContentUrl + "/" + itemId + "/data"
         url: contentUrl + "/data"
         responseType: "zip"
+        method: "GET"
 
         onSuccess: {
             downloaded(responsePath);
@@ -266,6 +267,7 @@ Item {
         id: thumbnailRequest
 
         portal: portalItem.portal
+        method: "GET"
 
         onSuccess: {
             thumbnailDownloaded(responsePath);

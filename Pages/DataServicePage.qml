@@ -159,9 +159,25 @@ PageView {
             Text {
                 Layout.fillWidth: true
 
+                text: qsTr("Owner: <b>%1</b>").arg(dataService.itemInfo.owner)
+                color: theme.textColor
+                horizontalAlignment: Text.AlignHCenter
+                font {
+                    pointSize: 13
+                }
+            }
+
+            Text {
+                Layout.fillWidth: true
+
                 text: qsTr("Modifed: <b>%1</b>").arg(new Date(dataService.itemInfo.modified))
                 color: theme.textColor
                 horizontalAlignment: Text.AlignHCenter
+                fontSizeMode: Text.HorizontalFit
+                minimumPointSize: 8
+                font {
+                    pointSize: 13
+                }
             }
 
             Text {

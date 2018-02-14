@@ -40,6 +40,14 @@ PageView {
     property var lastInsertId
 
     property bool showMap: false
+    property real directionSpeedThreshold: 0.5
+
+    property color accuracyGoodColor: theme.textColor
+    property color accuracyAlertColor: "#FFBF00"
+    property color accuracyPoorColor: "red"
+
+    property real accuracyGoodThreshold: 10
+    property real accuracyAlertThreshold: 100
 
     //--------------------------------------------------------------------------
 
@@ -57,15 +65,15 @@ PageView {
         }
 
         if (options.columns) {
-            featureTypesPanel.columns = options.columns;
+            featureButtonsPanel.columns = options.columns;
         }
 
         if (options.columnSpacing) {
-            featureTypesPanel.columnSpacing = options.columnSoacing * AppFramework.displayScaleFactor;
+            featureButtonsPanel.columnSpacing = options.columnSoacing * AppFramework.displayScaleFactor;
         }
 
         if (options.rowSpacing) {
-            featureTypesPanel.rowSpacing = options.rowSoacing * AppFramework.displayScaleFactor;
+            featureButtonsPanel.rowSpacing = options.rowSoacing * AppFramework.displayScaleFactor;
         }
 
         if (options.backgroundColor) {
@@ -84,15 +92,21 @@ PageView {
             if (position.latitudeValid && position.longitudeValid) {
                 coordinate = position.coordinate;
                 horizontalAccuracy = Math.round(position.horizontalAccuracy);
-                if (horizontalAccuracy <= 10) {
-                    coordinateColor = "white";
-                } else if (horizontalAccuracy <= 100) {
-                    coordinateColor = "orange";
+                if (horizontalAccuracy <= accuracyGoodThreshold) {
+                    coordinateColor = accuracyGoodColor;
+                } else if (horizontalAccuracy <= accuracyAlertThreshold) {
+                    coordinateColor = accuracyAlertColor;
                 } else {
-                    coordinateColor = "red";
+                    coordinateColor = accuracyPoorColor;
                 }
 
                 map.center = coordinate;
+
+                if (position.speedValid && position.directionValid && position.speed >= directionSpeedThreshold) {
+                    map.bearing = position.direction;
+                } else {
+                    map.bearing = 0;
+                }
             }
         }
     }
@@ -207,8 +221,8 @@ PageView {
 
             clip: true
 
-            FeatureTypesPanel {
-                id: featureTypesPanel
+            FeatureButtonsPanel {
+                id: featureButtonsPanel
 
                 width: scrollView.width
 

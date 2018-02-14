@@ -36,6 +36,10 @@ Button {
     property color downTextColor: textColor
     property color downBorderColor: "darkgrey"
 
+    property color backgroundColor: symbol.color
+    property color borderColor: symbol.outlineColor
+    property real borderWidth: symbol.outlineWidth * symbol.scaleFactor
+
     //--------------------------------------------------------------------------
 
     signal addFeature(var button)
@@ -45,15 +49,15 @@ Button {
     Component.onCompleted: {
 
         if (options.color) {
-            background.color = options.color;
+            backgroundColor = options.color;
         }
 
         if (options.outlineColor) {
-            background.border.color = options.outlineColor;
+            borderColor = options.outlineColor;
         }
 
         if (options.outlineWidth) {
-            background.border.width = options.outlineWidth * symbol.scaleFactor;
+            borderWidth = options.outlineWidth * symbol.scaleFactor;
         }
 
         textColor = HelpersLib.contrastColor(background.color);
@@ -82,11 +86,11 @@ Button {
         implicitWidth: 100 * AppFramework.displayScaleFactor
         implicitHeight: 40 * AppFramework.displayScaleFactor
 
-        color: symbol.color
+        color: control.down ? Qt.lighter(backgroundColor, 1.2) : backgroundColor
         opacity: enabled ? 1 : 0.3
         border {
-            color: control.down ? downBorderColor : symbol.outlineColor
-            width: symbol.outlineWidth * symbol.scaleFactor * control.down ? 1 : 1.3
+            color: control.down ? downBorderColor : borderColor
+            width: borderWidth * control.down ? 1 : 1.3
         }
 
         radius: 5 * AppFramework.displayScaleFactor

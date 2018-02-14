@@ -29,8 +29,18 @@ FeatureButton {
     //--------------------------------------------------------------------------
 
     Component.onCompleted: {
-//        topPadding = symbol.size * symbol.scaleFactor * 2;
-//        bottomPadding = topPadding;
+        switch (symbol.style) {
+        case symbol.kCircleStyle:
+            background.radius = Qt.binding(function() { return background.height / 2; })
+            break;
+
+        case symbol.kSquareStyle:
+            background.radius = 0;
+            break;
+
+        default:
+            break;
+        }
     }
     
     //--------------------------------------------------------------------------

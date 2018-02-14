@@ -43,6 +43,13 @@ Item {
     readonly property string kPictureMarkerSymbol: "esriPMS"
     readonly property string kSimpleMarkerSymbol: "esriSMS"
 
+    readonly property string kCircleStyle: "esriSMSCircle"
+    readonly property string kCrossStyle: "esriSMSCross"
+    readonly property string kDiamondStyle: "esriSMSDiamond"
+    readonly property string kSquareStyle: "esriSMSSquare"
+    readonly property string kXStyle: "esriSMSX"
+    readonly property string kTriangleStyle: "esriSMSTriangle"
+
     //--------------------------------------------------------------------------
 
     onSymbolInfoChanged: {

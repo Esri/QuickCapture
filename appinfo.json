@@ -76,7 +76,7 @@
         "launchImageOverlay": "launchimage-overlay.png"
     },
     "type": "app",
-    "urlScheme": "",
+    "urlScheme": "arcgis-quickcapture",
     "version": {
         "major": 1,
         "micro": 23

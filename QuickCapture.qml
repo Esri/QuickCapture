@@ -40,12 +40,12 @@ App {
     property alias userInfo: userInfo
     property alias theme: theme
 
-    property string fontFamily: ""
+    property string fontFamily: Qt.application.font.family
 
     //--------------------------------------------------------------------------
 
     Component.onCompleted: {
-        fontFamily = app.info.propertyValue("fontFamily", "");
+        fontFamily = app.info.propertyValue("fontFamily", Qt.application.font.family);
 
         userInfo.read();
 

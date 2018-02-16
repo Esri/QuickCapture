@@ -15,67 +15,61 @@
  */
 
 import QtQuick 2.9
-import QtQuick.Layouts 1.3
 import QtQuick.Controls 2.2
+import QtGraphicalEffects 1.0
 
 import ArcGIS.AppFramework 1.0
 
+
 Item {
-    property var typeInfo
-    property string typeId
-    property string name
-    property var options
-    property alias symbol: symbol
-    property alias symbolInfo: symbol.symbolInfo
-    property alias textColor: nameText.color
-    readonly property bool collapsed: groupIndicator.collapsed || layerCollapsed
-    property bool layerCollapsed: false
+    //--------------------------------------------------------------------------
+
+    property bool collapsed: false
+    property alias color: colorOverlay.color
+
+    //--------------------------------------------------------------------------
+
+    implicitWidth: 100
+    implicitHeight: 100
     
     //--------------------------------------------------------------------------
 
-    implicitHeight: nameText.paintedHeight
-    
-    //--------------------------------------------------------------------------
-
-    Component.onCompleted: {
-        typeId = typeInfo.id;
-    }
-
-    //--------------------------------------------------------------------------
-
-    GroupIndicator {
-        id: groupIndicator
-
-        height: parent.height
-        width: height
-
-        color: textColor
-    }
-
-    //--------------------------------------------------------------------------
-
-    Text {
-        id: nameText
+    Image {
+        id: groupImage
         
-        anchors {
-            left: parent.left
-            right: parent.right
-        }
+        anchors.fill: parent
         
-        text: name
-        font {
-            pointSize: 16
-            bold: !collapsed
-            italic: collapsed
-        }
-        horizontalAlignment: Text.AlignHCenter
-        wrapMode: Text.WrapAtWordBoundaryOrAnywhere
+        fillMode: Image.PreserveAspectFit
+        source: "images/group-indicator.png"
+        visible: false
     }
     
     //--------------------------------------------------------------------------
 
-    Symbol {
-        id: symbol
+    ColorOverlay {
+        id: colorOverlay
+
+        anchors.fill: groupImage
+        source: groupImage
+        color: "darkgrey"
+
+        rotation: collapsed ? -90 : 0
+
+        Behavior on rotation {
+            NumberAnimation {
+                duration: 200
+            }
+        }
+    }
+    
+    //--------------------------------------------------------------------------
+
+    MouseArea {
+        anchors.fill: parent
+        
+        onClicked: {
+            collapsed = !collapsed;
+        }
     }
 
     //--------------------------------------------------------------------------

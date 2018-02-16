@@ -82,9 +82,6 @@ GridLayout {
                                                             visible: multipleLayers
                                                         });
 
-        layerItem.Layout.fillWidth = true;
-        layerItem.Layout.columnSpan = columns;
-
         layerInfo.templates.forEach(function (templateInfo) {
             addTemplate(layerItem, undefined, templateInfo);
         });
@@ -111,12 +108,11 @@ GridLayout {
                                                           typeInfo: typeInfo,
                                                           name: name,
                                                           options: options,
-                                                          symbolInfo: uniqueValueInfo.symbol,
-                                                          visible: typeInfo.templates.length > 1
+                                                          symbolInfo: uniqueValueInfo.symbol
                                                       });
 
-        typeItem.Layout.fillWidth = true;
-        typeItem.Layout.columnSpan = columns;
+        typeItem.layerCollapsed = Qt.binding(function() { return layerItem.collapsed; });
+        typeItem.visible = Qt.binding(function () { return typeInfo.templates.length > 1 && !layerItem.collapsed; });
 
         typeInfo.templates.forEach(function (templateInfo) {
             addTemplate(layerItem, typeItem, templateInfo);
@@ -144,9 +140,14 @@ GridLayout {
                                                       });
 
         //buttonItem.Layout.fillWidth = true;
-        buttonItem.Layout.preferredWidth = Qt.binding(function() { return columnWidth; });
         buttonItem.Layout.fillHeight = true;
+        buttonItem.Layout.preferredWidth = Qt.binding(function() { return columnWidth; });
         buttonItem.Layout.columnSpan = 1;
+        if (typeItem) {
+            buttonItem.visible = Qt.binding(function() { return !typeItem.collapsed; });
+        } else {
+            buttonItem.visible = Qt.binding(function() { return !layerItem.collapsed; });
+        }
 
         buttonItem.addFeature.connect(addFeatureClicked);
     }
@@ -163,7 +164,13 @@ GridLayout {
     Component {
         id: layerItemComponent
 
+
         LayerItem {
+            Layout.fillWidth: true
+            Layout.columnSpan: columns
+            Layout.topMargin: 5 * AppFramework.displayScaleFactor
+            Layout.bottomMargin: 5 * AppFramework.displayScaleFactor
+
             textColor: HelpersLib.contrastColor(background.color)
         }
     }
@@ -174,6 +181,11 @@ GridLayout {
         id: typeItemComponent
 
         TypeItem {
+            Layout.fillWidth: true
+            Layout.columnSpan: columns
+            Layout.topMargin: 5 * AppFramework.displayScaleFactor
+            Layout.bottomMargin: 5 * AppFramework.displayScaleFactor
+
             textColor: HelpersLib.contrastColor(background.color)
         }
     }

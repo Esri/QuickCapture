@@ -29,6 +29,7 @@ Item {
     property alias symbol: symbol
     property alias symbolInfo: symbol.symbolInfo
     property alias textColor: nameText.color
+    property alias collapsed: groupIndicator.collapsed
 
     //--------------------------------------------------------------------------
 
@@ -42,6 +43,17 @@ Item {
         if (layerInfo.drawingInfo.renderer.type === "simple") {
             symbol.symbolInfo = layerInfo.drawingInfo.renderer.symbol;
         }
+    }
+
+    //--------------------------------------------------------------------------
+
+    GroupIndicator {
+        id: groupIndicator
+
+        height: parent.height
+        width: height
+
+        color: textColor
     }
 
     //--------------------------------------------------------------------------

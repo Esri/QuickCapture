@@ -24,6 +24,8 @@ import "../Controls"
 ListView {
     id: listView
 
+    property string headerText
+
     //--------------------------------------------------------------------------
 
     property alias refreshHeader: refreshHeader
@@ -45,8 +47,31 @@ ListView {
         onRefresh: {
             listView.refresh();
         }
+
     }
 
+    Text {
+        id: header
+
+        anchors {
+            top: parent.top
+            left: parent.left
+            right: parent.right
+        }
+
+        text: headerText
+        horizontalAlignment: Text.AlignHCenter
+        verticalAlignment: Text.AlignTop
+        color: refreshHeader.textColor
+
+        fontSizeMode: Text.HorizontalFit
+        minimumPointSize: 8
+        font {
+            pointSize: 12
+        }
+
+        visible: parent.contentY <= -header.height
+    }
 
     //--------------------------------------------------------------------------
 }

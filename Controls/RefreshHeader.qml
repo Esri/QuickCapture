@@ -32,7 +32,11 @@ Item {
     property color textColor: "#777777"
     property bool refreshing: false
 
+    //--------------------------------------------------------------------------
+
     signal refresh();
+
+    //--------------------------------------------------------------------------
 
     anchors {
         left: parent.left
@@ -56,7 +60,7 @@ Item {
     RowLayout {
         id: refreshLayout
         
-        height: 40 * AppFramework.displayScaleFactor
+        height: 50 * AppFramework.displayScaleFactor
         spacing: 5 * AppFramework.displayScaleFactor
         anchors.centerIn: parent
 

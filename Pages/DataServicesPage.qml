@@ -36,6 +36,8 @@ PageView {
     property var signedInCallback
     property bool refreshOnce: true
 
+    property string lastSearchText
+    readonly property string kLastSearch: "lastSearch"
 
     //--------------------------------------------------------------------------
 
@@ -103,6 +105,7 @@ PageView {
 
                 model: dataServices.model
                 delegate: dataServiceDelegate
+                headerText: lastSearchText
 
                 onRefresh: {
                     if (portal.signedIn) {
@@ -193,6 +196,12 @@ PageView {
                 }
             }
         }
+
+        onSearchCompleted: {
+            var date = new Date();
+            app.settings.setValue(kLastSearch, date);
+            updateLastSearchText(date);
+        }
     }
 
     //--------------------------------------------------------------------------
@@ -280,7 +289,18 @@ PageView {
             dataFolder.makeFolder();
         }
 
+        var lastSearch = new Date(app.settings.value(kLastSearch));
+        if (isFinite(lastSearch.valueOf())) {
+            updateLastSearchText(lastSearch);
+        }
+
         dataServices.refresh();
+    }
+
+    //--------------------------------------------------------------------------
+
+    function updateLastSearchText(date) {
+        lastSearchText = qsTr("Last updated <b>%1</b>").arg(date);
     }
 
     //--------------------------------------------------------------------------

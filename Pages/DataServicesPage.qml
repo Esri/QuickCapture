@@ -300,7 +300,7 @@ PageView {
     //--------------------------------------------------------------------------
 
     function updateLastSearchText(date) {
-        lastSearchText = qsTr("Last updated <b>%1</b>").arg(date);
+        lastSearchText = qsTr("Last refreshed on <b>%1</b>").arg(date);
     }
 
     //--------------------------------------------------------------------------

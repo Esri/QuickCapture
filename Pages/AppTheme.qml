@@ -21,7 +21,7 @@ import ArcGIS.AppFramework 1.0
 QtObject {
     property App app
 
-    property string fontFamily: app.info.propertyValue("fontFamily", "")
+    property string fontFamily: Qt.application.font.family
 
     property color backgroundColor: "#202020"
     property color textColor: "#fefefe"
@@ -51,6 +51,14 @@ QtObject {
     //--------------------------------------------------------------------------
 
     function read() {
+        var family = app.info.propertyValue("fontFamily");
+        if (family > "") {
+            fontFamily = family;
+        }
+
+        console.log("App fontFamily:", fontFamily);
+
+//        console.log("fontFamilies:", JSON.stringify(Qt.fontFamilies()));
     }
 
     //--------------------------------------------------------------------------

@@ -24,11 +24,11 @@
     "largeThumbnail": null,
     "licenseInfo": null,
     "listed": false,
-    "modified": 1519271101000,
+    "modified": 1519271644000,
     "name": "3e87f858b4dd4cd9b4578fcdc7b9f17d.zip",
-    "numComments": 20,
+    "numComments": 21,
     "numRatings": 0,
-    "numViews": 90,
+    "numViews": 93,
     "owner": "appstudio_apps",
     "ownerFolder": null,
     "properties": null,
@@ -37,7 +37,7 @@
     "scoreCompleteness": 33,
     "screenshots": [
     ],
-    "size": 866084,
+    "size": 866086,
     "snippet": "Rapid data capture for ArcGIS",
     "spatialReference": null,
     "tags": [

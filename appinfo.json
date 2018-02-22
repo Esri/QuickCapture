@@ -79,6 +79,6 @@
     "urlScheme": "arcgis-quickcapture",
     "version": {
         "major": 1,
-        "micro": 26
+        "micro": 27
     }
 }

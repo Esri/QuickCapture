@@ -91,8 +91,8 @@ GridLayout {
                                                             visible: multipleLayers
                                                         });
 
-        layerInfo.templates.forEach(function (templateInfo) {
-            addTemplate(layerItem, undefined, templateInfo);
+        layerInfo.templates.forEach(function (templateInfo, index, array) {
+            addTemplate(layerItem, undefined, templateInfo, index, array);
         });
 
         layerInfo.types.forEach(function (typeInfo) {
@@ -110,33 +110,34 @@ GridLayout {
 
         //console.log("UV:", JSON.stringify(uniqueValueInfo, undefined, 2));
 
-        var uniqueValueInfo = layerItem.findUniqueValueInfo(typeInfo.id);
+        var symbol = layerItem.findSymbol(typeInfo.id);
 
         var typeItem = typeItemComponent.createObject(panel,
                                                       {
                                                           typeInfo: typeInfo,
                                                           name: name,
                                                           options: options,
-                                                          symbolInfo: uniqueValueInfo.symbol
+                                                          symbolInfo: symbol
                                                       });
 
         typeItem.layerCollapsed = Qt.binding(function() { return layerItem.collapsed; });
         typeItem.visible = Qt.binding(function () { return typeInfo.templates.length > 1 && !layerItem.collapsed; });
 
-        typeInfo.templates.forEach(function (templateInfo) {
-            addTemplate(layerItem, typeItem, templateInfo);
+        typeInfo.templates.forEach(function (templateInfo, index, array) {
+            addTemplate(layerItem, typeItem, templateInfo, index, array);
         });
     }
 
     //--------------------------------------------------------------------------
 
-    function addTemplate(layerItem, typeItem, templateInfo) {
+    function addTemplate(layerItem, typeItem, templateInfo, index, array) {
 
         console.log("Template:", templateInfo.name, templateInfo.description);
 
         var description = dataService.parseText(templateInfo.description);
         var options = dataService.parseOptions(templateInfo.description);
         var symbol = typeItem ? typeItem.symbol : layerItem.symbol;
+        var groupItemVisible = typeItem ? typeItem.visible : layerItem.visible;
 
         var buttonComponent;
 
@@ -149,7 +150,7 @@ GridLayout {
 
         case dataService.kGeometryPolyline:
         case dataService.kGeometryPolygon:
-            buttonGroup = typeItem ? typeItem.buttonGroup: layerItem.buttonGroup;
+            buttonGroup = typeItem ? typeItem.buttonGroup : layerItem.buttonGroup;
             buttonComponent = polyButtonComponent;
             break;
         }
@@ -169,10 +170,16 @@ GridLayout {
                                                           symbol: symbol
                                                       });
 
-        //buttonItem.Layout.fillWidth = true;
         buttonItem.Layout.fillHeight = true;
         buttonItem.Layout.preferredWidth = Qt.binding(function() { return columnWidth; });
-        buttonItem.Layout.columnSpan = 1;
+
+        if (array.length === 1 && groupItemVisible) {
+            buttonItem.Layout.columnSpan = columns;
+            buttonItem.Layout.fillWidth = true;
+        } else {
+            buttonItem.Layout.columnSpan = 1;
+        }
+
         if (typeItem) {
             buttonItem.visible = Qt.binding(function() { return !typeItem.collapsed; });
         } else {
@@ -257,7 +264,7 @@ GridLayout {
             }
 
             onEndFeature: {
-                dataService.endPoly(currentFeatureId);
+                lastInsertId = dataService.endPoly(currentFeatureId);
             }
         }
     }

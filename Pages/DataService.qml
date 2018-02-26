@@ -708,13 +708,14 @@ Item {
     function endPoly(featureId) {
         console.log("Ending poly:", featureId);
 
-        var featureQuery = database.query("SELECT * FROM Features WHERE FeatureId = ?", featureId);
+        var featureQuery = database.query("SELECT rowid, * FROM Features WHERE FeatureId = ?", featureId);
 
         if (!featureQuery.first()) {
             console.error("Error finding feature:", featureId);
             return;
         }
 
+        var rowId = featureQuery.value("rowid");
         var feature = JSON.parse(featureQuery.value("Feature"));
 
         var layer = findLayer(featureQuery.value("LayerId"));
@@ -781,6 +782,8 @@ Item {
         console.log("endPoly rowsAffected:", updateQuery.rowsAffected);
 
         update();
+
+        return rowId;
     }
 
     //--------------------------------------------------------------------------

@@ -33,6 +33,7 @@ FeatureButton {
     property bool flashOn
     readonly property bool pulse: checked && pulseOn
 
+
     property string currentFeatureId
     property date startTime
     property var lastPosition
@@ -42,6 +43,14 @@ FeatureButton {
 
     property bool lightOn
     property bool active
+
+    property color pulseBorderColor: "white"
+    property real pulseBorderWidth: 3 * AppFramework.displayScaleFactor
+
+    property color blinkOnColor: "red"
+    property color blinkOffColor: "darkred"
+    property color blinkBorderOnColor: "white"
+    property color blinkBorderOffColor: "silver"
 
     //--------------------------------------------------------------------------
 
@@ -102,8 +111,8 @@ FeatureButton {
         color: (control.down || pulse) ? Qt.lighter(backgroundColor, 1.2) : backgroundColor
         opacity: enabled ? 1 : 0.3
         border {
-            color: control.down ? downBorderColor : borderColor
-            width: borderWidth * control.down ? 1 : 1.3
+            color: control.down ? downBorderColor : pulse ? pulseBorderColor : borderColor
+            width: pulse ? pulseBorderWidth : borderWidth * (control.down ? 1 : 1.3)
         }
 
         radius: 5 * AppFramework.displayScaleFactor
@@ -115,14 +124,16 @@ FeatureButton {
                 margins: 10 * AppFramework.displayScaleFactor
             }
 
+            visible: checked
             width: 20 * AppFramework.displayScaleFactor
             height: width
             radius: height / 2
 
-            color: lightOn ? "red" : "darkred"
+            color: lightOn ? blinkOnColor : blinkOffColor
+
             border {
-                width: 1
-                color: "silver"
+                width: 1 * AppFramework.displayScaleFactor
+                color: lightOn ? blinkBorderOnColor : blinkBorderOffColor
             }
         }
     }
@@ -153,10 +164,6 @@ FeatureButton {
     //--------------------------------------------------------------------------
 
     function beginPoly() {
-        if (buttonGroup) {
-            //buttonGroup.clicked(this);
-        }
-
         startTime = new Date();
         lastPosition = null;
         currentFeatureId = AppFramework.createUuidString(2);

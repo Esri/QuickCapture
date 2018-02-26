@@ -341,7 +341,7 @@ PageView {
                     Layout.fillWidth: true
 
                     enabled: lastInsertId > 0
-                    text: qsTr("Delete Last Point")
+                    text: qsTr("Delete last capture")
 
                     onClicked: {
                         dataService.deleteRow(lastInsertId);

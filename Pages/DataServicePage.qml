@@ -62,6 +62,14 @@ PageView {
                 fillMode: Image.PreserveAspectFit
                 horizontalAlignment: Image.AlignHCenter
                 verticalAlignment: Image.AlignVCenter
+
+                MouseArea {
+                    anchors.fill: parent
+
+                    onPressAndHold: {
+                        Qt.openUrlExternally(dataService.folder.url);
+                    }
+                }
             }
 
             Text {
@@ -105,7 +113,7 @@ PageView {
                 Layout.fillWidth: true
 
                 enabled: dataService.points > 0 && !dataService.uploading
-                text: qsTr("Delete all local data - %n feature(s)", "", dataService.points)
+                text: qsTr("Press and hold to delete all local data - %n feature(s)", "", dataService.points)
 
                 onActivated: {
                     dataService.deleteAll();
@@ -116,7 +124,7 @@ PageView {
                 Layout.fillWidth: true
 
                 enabled: !dataService.uploading
-                text: qsTr("Delete this project")
+                text: qsTr("Press and hold to delete this project")
 
                 onActivated: {
                     dataService.deleteFiles();

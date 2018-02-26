@@ -26,6 +26,8 @@ import "HelpersLib.js" as HelpersLib
 Button {
     id: button
     
+    property ButtonGroup buttonGroup
+
     property int layerId
     property var template
     property string description
@@ -47,6 +49,15 @@ Button {
     //--------------------------------------------------------------------------
 
     Component.onCompleted: {
+
+        var exclusive = true;
+        if (typeof options.exclusive === "boolean") {
+            exclusive = options.exclusive;
+        }
+
+        if (buttonGroup && exclusive) {
+            buttonGroup.addButton(this);
+        }
 
         if (options.color) {
             backgroundColor = options.color;
@@ -94,12 +105,6 @@ Button {
         }
 
         radius: 5 * AppFramework.displayScaleFactor
-    }
-
-    //--------------------------------------------------------------------------
-
-    onClicked: {
-        addFeature(this);
     }
 
     //--------------------------------------------------------------------------

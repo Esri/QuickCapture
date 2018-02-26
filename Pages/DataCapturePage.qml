@@ -38,6 +38,7 @@ PageView {
     property color coordinateColor: "white"
     property real horizontalAccuracy
     property var lastInsertId
+    property var currentPosition
 
     property bool showMap: false
     property real directionSpeedThreshold: 0.5
@@ -56,6 +57,8 @@ PageView {
     //--------------------------------------------------------------------------
 
     Component.onCompleted: {
+        dataService.autoEnd();
+
         var options = dataService.parseOptions(dataService.itemInfo.accessInformation);
 
         console.log("Project options:", JSON.stringify(options, undefined, 2));
@@ -90,6 +93,8 @@ PageView {
 
         onPositionChanged: {
             if (position.latitudeValid && position.longitudeValid) {
+                currentPosition = position;
+
                 coordinate = position.coordinate;
                 horizontalAccuracy = Math.round(position.horizontalAccuracy);
                 if (horizontalAccuracy <= accuracyGoodThreshold) {
@@ -228,9 +233,10 @@ PageView {
 
                 dataService: page.dataService
                 background: backgroundFill
+                currentPosition: page.currentPosition
 
                 onAddFeature: {
-                    lastInsertId = dataService.insertFeature(positionSource.position, layerId, template.prototype.attributes);
+                    lastInsertId = dataService.insertPointFeature(positionSource.position, layerId, template.prototype.attributes);
                     captureAudio.play();
                 }
             }
@@ -266,7 +272,7 @@ PageView {
                 visible: showMap
 
                 plugin: Plugin {
-                    preferred: ["AppStudio", "ArcGIS", "esri"]
+                    preferred: ["AppStudio"]
                 }
 
                 zoomLevel: 18

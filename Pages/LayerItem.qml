@@ -30,6 +30,7 @@ Item {
     property alias symbolInfo: symbol.symbolInfo
     property alias textColor: nameText.color
     property alias collapsed: groupIndicator.collapsed
+    property alias buttonGroup: buttonGroup
 
     //--------------------------------------------------------------------------
 
@@ -43,6 +44,12 @@ Item {
         if (layerInfo.drawingInfo.renderer.type === "simple") {
             symbol.symbolInfo = layerInfo.drawingInfo.renderer.symbol;
         }
+    }
+
+    //--------------------------------------------------------------------------
+
+    ButtonGroup {
+        id: buttonGroup
     }
 
     //--------------------------------------------------------------------------

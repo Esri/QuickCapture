@@ -30,7 +30,8 @@ Item {
     property alias textColor: nameText.color
     readonly property bool collapsed: groupIndicator.collapsed || layerCollapsed
     property bool layerCollapsed: false
-    
+    property alias buttonGroup: buttonGroup
+
     //--------------------------------------------------------------------------
 
     implicitHeight: nameText.paintedHeight
@@ -39,6 +40,12 @@ Item {
 
     Component.onCompleted: {
         typeId = typeInfo.id;
+    }
+
+    //--------------------------------------------------------------------------
+
+    ButtonGroup {
+        id: buttonGroup
     }
 
     //--------------------------------------------------------------------------

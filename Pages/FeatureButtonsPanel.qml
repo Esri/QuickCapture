@@ -29,8 +29,17 @@ GridLayout {
 
     property DataService dataService
     property Rectangle background
+    property var currentPosition
 
     readonly property real columnWidth: (width - (columns - 1) * columnSpacing) / columns
+
+    //--------------------------------------------------------------------------
+
+    readonly property var kGeometryTypes: [
+        dataService.kGeometryPoint,
+        dataService.kGeometryPolyline,
+        dataService.kGeometryPolygon
+    ]
 
     //--------------------------------------------------------------------------
 
@@ -47,7 +56,7 @@ GridLayout {
     Component.onCompleted: {
         var captureLayers = 0;
         dataService.featureServiceInfo.layers.forEach(function (layer) {
-            if (layer.geometryType === "esriGeometryPoint"
+            if (kGeometryTypes.indexOf(layer.geometryType) >= 0
                     && layer.types.length > 0) {
                 captureLayers++;
             }
@@ -63,7 +72,7 @@ GridLayout {
     function addLayer(layerInfo, multipleLayers) {
         console.log("Layer:", layerInfo.id, layerInfo.name);
 
-        if (layerInfo.geometryType !== "esriGeometryPoint") {
+        if (kGeometryTypes.indexOf(layerInfo.geometryType) < 0) {
             return;
         }
 
@@ -129,9 +138,30 @@ GridLayout {
         var options = dataService.parseOptions(templateInfo.description);
         var symbol = typeItem ? typeItem.symbol : layerItem.symbol;
 
-        var buttonComponent = symbol.type === "esriPMS" ? imageButtonComponent : textButtonComponent;
+        var buttonComponent;
+
+        var buttonGroup = null;
+
+        switch (layerItem.layerInfo.geometryType) {
+        case dataService.kGeometryPoint:
+            buttonComponent = symbol.type === "esriPMS" ? imageButtonComponent : textButtonComponent;
+            break;
+
+        case dataService.kGeometryPolyline:
+        case dataService.kGeometryPolygon:
+            buttonGroup = typeItem ? typeItem.buttonGroup: layerItem.buttonGroup;
+            buttonComponent = polyButtonComponent;
+            break;
+        }
+
+        if (!buttonComponent) {
+            console.error("Null button component");
+            return;
+        }
+
         var buttonItem = buttonComponent.createObject(panel,
                                                       {
+                                                          buttonGroup: buttonGroup,
                                                           layerId: layerItem.layerId,
                                                           template: templateInfo,
                                                           description: description,
@@ -205,6 +235,62 @@ GridLayout {
         id: imageButtonComponent
 
         FeatureImageButton {
+        }
+    }
+
+    //--------------------------------------------------------------------------
+
+    Component {
+        id: polyButtonComponent
+
+        FeaturePolyButton {
+            currentPosition: panel.currentPosition
+            pulseOn: pulseTimer.pulseOn
+            flashOn: flashTimer.flashOn
+
+            onBeginFeature: {
+                dataService.beginPoly(currentFeatureId, layerId, template.prototype.attributes);
+            }
+
+            onAddFeaturePoint: {
+                dataService.insertPolyPoint(currentFeatureId, currentPosition);
+            }
+
+            onEndFeature: {
+                dataService.endPoly(currentFeatureId);
+            }
+        }
+    }
+
+    //--------------------------------------------------------------------------
+
+    Timer {
+        id: pulseTimer
+
+        property bool pulseOn
+
+        running: true
+        interval: 1000 / 3
+        repeat: true
+
+        onTriggered: {
+            pulseOn = !pulseOn;
+        }
+    }
+
+    //--------------------------------------------------------------------------
+
+    Timer {
+        id: flashTimer
+
+        property bool flashOn
+
+        running: true
+        interval: 100
+        repeat: true
+
+        onTriggered: {
+            flashOn = !flashOn;
         }
     }
 

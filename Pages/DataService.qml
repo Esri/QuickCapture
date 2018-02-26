@@ -56,6 +56,18 @@ Item {
 
     //--------------------------------------------------------------------------
 
+    readonly property string kGeometryPoint: "esriGeometryPoint"
+    readonly property string kGeometryPolyline: "esriGeometryPolyline"
+    readonly property string kGeometryPolygon: "esriGeometryPolygon"
+
+
+    readonly property int kWGS84: 4326
+
+    readonly property int kStatusReady: 0
+    readonly property int kStatusInProgress: 1
+
+    //--------------------------------------------------------------------------
+
     signal created()
     signal ready();
     signal opened();
@@ -355,12 +367,16 @@ Item {
     //--------------------------------------------------------------------------
     
     function createTables() {
-        database.query("CREATE TABLE IF NOT EXISTS Features (Status INTEGER, Timestamp DATE, Latitude REAL, Longitude REAL, Speed REAL, LayerId NUMBER, TypeId TEXT, Feature TEXT)");
+
+        database.query("PRAGMA foreign_keys = ON;");
+
+        database.query("CREATE TABLE IF NOT EXISTS Features (Status INTEGER, FeatureId TEXT UNIQUE, Timestamp NUMBER, LayerId NUMBER, TypeId TEXT, Feature TEXT)");
+        database.query("CREATE TABLE IF NOT EXISTS Points (FeatureId TEXT, Timestamp NUMBER, Latitude NUMBER, Longitude NUMBER, Altitude NUMBER, FOREIGN KEY(FeatureId) REFERENCES Features(FeatureId) ON UPDATE CASCADE ON DELETE CASCADE)");
     }
     
     //--------------------------------------------------------------------------
     
-    function insertFeature(position, layerId, attributes) {
+    function insertPointFeature(position, layerId, attributes) {
         console.log(JSON.stringify(position));
 
         var layer = findLayer(layerId);
@@ -369,7 +385,7 @@ Item {
             x: position.coordinate.longitude,
             y: position.coordinate.latitude,
             spatialReference: {
-                wkid: 4326
+                wkid: kWGS84
             }
         };
 
@@ -379,17 +395,14 @@ Item {
 
         var feature = {
             geometry: geometry,
-            attributes: replaceVariables(layerId, JSON.parse(JSON.stringify(attributes)), position)
+            attributes: replaceVariables(layerId, clone(attributes), position)
         }
 
         console.log("Insert layerId:", layerId, "feature:", JSON.stringify(feature, undefined, 2));
 
-        var query = database.query("INSERT INTO Features (Status, Timestamp, Latitude, Longitude, Speed, LayerId, Feature) VALUES (?,?,?,?,?,?,?)",
-                                   0,
-                                   position.timestamp.toString(),
-                                   position.coordinate.latitude,
-                                   position.coordinate.longitude,
-                                   position.speed,
+        var query = database.query("INSERT INTO Features (Status, Timestamp, LayerId, Feature) VALUES (?,?,?,?)",
+                                   kStatusReady,
+                                   position.timestamp.valueOf(),
                                    layerId,
                                    JSON.stringify(feature));
 
@@ -403,7 +416,6 @@ Item {
     //--------------------------------------------------------------------------
 
     function replaceVariables(layerId, attributes, position) {
-
         var keys = Object.keys(attributes);
 
         keys.forEach(function (key) {
@@ -435,6 +447,10 @@ Item {
 
     function replaceVariable(field, value, position) {
         //console.log("field:", JSON.stringify(field), "value:", value);
+
+        if (!position) {
+            position = {};
+        }
 
         function validValue(isValid, validValue, invalidValue) {
             if (typeof invalidValue === "undefined") {
@@ -545,7 +561,7 @@ Item {
 
     function count(status) {
         if (!status) {
-            status = 0;
+            status = kStatusReady;
         }
 
         var query = database.query("SELECT COUNT(*) FROM Features WHERE Status = ?", status);
@@ -615,7 +631,7 @@ Item {
     }
 
     function uploadNext() {
-        var query = database.query("SELECT rowid, LayerId, Feature From Features WHERE Status = 0 LIMIT 1");
+        var query = database.query("SELECT rowid, LayerId, Feature From Features WHERE Status = ? LIMIT 1", kStatusReady);
         if (!query.first()) {
             console.log("End of data reached");
             uploading = false;
@@ -666,6 +682,143 @@ Item {
 
     function update() {
         points = dataService.count();
+    }
+
+    //--------------------------------------------------------------------------
+
+    function beginPoly(featureId, layerId, attributes) {
+        var feature = {
+            attributes: replaceVariables(layerId, clone(attributes), null)
+        }
+
+        console.log("Insert layerId:", layerId, "feature:", JSON.stringify(feature, undefined, 2));
+
+        var query = database.query("INSERT INTO Features (Status, FeatureId, Timestamp, LayerId, Feature) VALUES (?,?,?,?,?)",
+                                   kStatusInProgress,
+                                   featureId,
+                                   (new Date()).valueOf(),
+                                   layerId,
+                                   JSON.stringify(feature));
+
+        console.log("beginPoly insertId:", query.insertId);
+    }
+
+    //--------------------------------------------------------------------------
+
+    function endPoly(featureId) {
+        console.log("Ending poly:", featureId);
+
+        var featureQuery = database.query("SELECT * FROM Features WHERE FeatureId = ?", featureId);
+
+        if (!featureQuery.first()) {
+            console.error("Error finding feature:", featureId);
+            return;
+        }
+
+        var feature = JSON.parse(featureQuery.value("Feature"));
+
+        var layer = findLayer(featureQuery.value("LayerId"));
+
+        featureQuery.finish();
+
+        var pointsQuery = database.query("SELECT * FROM Points WHERE FeatureId = ? ORDER BY Timestamp", featureId);
+
+        var path = "[";
+        var count = 0;
+        var firstPoint;
+
+        if (pointsQuery.first()) {
+            do {
+                var x = pointsQuery.value("longitude");
+                var y = pointsQuery.value("latitude");
+
+                if (count) {
+                    path += ",";
+                }
+
+
+                var point = "[%1,%2]".arg(x).arg(y);
+                path += point;
+
+                if (!count) {
+                    firstPoint = point;
+                }
+
+                count++;
+
+            } while (pointsQuery.next());
+        }
+
+
+        if (layer.geometryType === kGeometryPolygon && count) {
+            console.log("Closing polygon");
+            path += "," + firstPoint;
+        }
+
+        path += "]";
+
+        pointsQuery.finish();
+
+        var geometry = {
+            paths: "[" + path + "]",
+            spatialReference: {
+                wkid: kWGS84
+            }
+        };
+
+        //console.log("count:", count, "path:", path);
+
+        feature.geometry = geometry;
+
+        console.log("End feature:", featureId, JSON.stringify(feature));
+
+        var updateQuery = database.query("UPDATE Features SET Status = ?, Feature = ? WHERE FeatureId = ?",
+                                         kStatusReady,
+                                         JSON.stringify(feature),
+                                         featureId);
+
+
+        console.log("endPoly rowsAffected:", updateQuery.rowsAffected);
+
+        update();
+    }
+
+    //--------------------------------------------------------------------------
+
+    function insertPolyPoint(featureId, position) {
+        var query = database.query("INSERT INTO Points (FeatureId, Timestamp, Latitude, Longitude, Altitude) VALUES (?,?,?,?,?)",
+                                   featureId,
+                                   position.timestamp.valueOf(),
+                                   position.coordinate.latitude,
+                                   position.coordinate.longitude,
+                                   position.coordinate.altitude);
+
+        console.log("insertPolyPoint insertId:", query.insertId);
+    }
+
+    //--------------------------------------------------------------------------
+
+    function autoEnd() {
+        console.log("Checking for in progress features");
+
+        var featureQuery = database.query("SELECT * FROM Features WHERE Status = ?", kStatusInProgress);
+
+        if (!featureQuery.first()) {
+            console.log("No features in progress");
+            return;
+        }
+
+        do {
+            endPoly(featureQuery.value("FeatureId"));
+        } while (featureQuery.next());
+
+        featureQuery.finish();
+    }
+
+    //--------------------------------------------------------------------------
+
+    function clone(o) {
+        return JSON.parse(JSON.stringify(o));
     }
 
     //--------------------------------------------------------------------------

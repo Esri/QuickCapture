@@ -27,6 +27,7 @@ Item {
     property real angle
     property string style
     property real size
+    property real lineWidth
     property color color: "#fafafa"
 
     property string outlineType
@@ -42,6 +43,8 @@ Item {
 
     readonly property string kPictureMarkerSymbol: "esriPMS"
     readonly property string kSimpleMarkerSymbol: "esriSMS"
+    readonly property string kSimpleLineSymbol: "esriSLS"
+    readonly property string kSimpleFillSymbol: "esriSFS"
 
     readonly property string kCircleStyle: "esriSMSCircle"
     readonly property string kCrossStyle: "esriSMSCross"
@@ -60,11 +63,18 @@ Item {
         //console.log("symbolInfo:", JSON.stringify(symbolInfo, undefined, 2));
 
         type = symbolInfo.type;
-        angle = symbolInfo.angle;
 
         switch (type) {
         case kSimpleMarkerSymbol:
             fromSimpleMarker();
+            break;
+
+        case kSimpleLineSymbol:
+            fromSimpleLine();
+            break;
+
+        case kSimpleFillSymbol:
+            fromSimpleFill();
             break;
 
         case kPictureMarkerSymbol:
@@ -80,6 +90,7 @@ Item {
     //--------------------------------------------------------------------------
 
     function fromSimpleMarker() {
+        angle = symbolInfo.angle;
         style = symbolInfo.style;
         size = symbolInfo.size;
         color = toColor(symbolInfo.color);
@@ -94,7 +105,30 @@ Item {
 
     //--------------------------------------------------------------------------
 
+    function fromSimpleLine() {
+        style = symbolInfo.style;
+        lineWidth = symbolInfo.width;
+        color = toColor(symbolInfo.color);
+    }
+
+    //--------------------------------------------------------------------------
+
+    function fromSimpleFill() {
+        style = symbolInfo.style;
+        color = toColor(symbolInfo.color);
+
+        console.log("outline:", JSON.stringify(symbolInfo.outline, undefined, 2))
+
+        outlineType = symbolInfo.outline.type || "";
+        outlineStyle = symbolInfo.outline.style || "";
+        outlineWidth = symbolInfo.outline.width;
+        outlineColor = toColor(symbolInfo.outline.color);
+    }
+
+    //--------------------------------------------------------------------------
+
     function fromPictureMarker() {
+        angle = symbolInfo.angle;
         imageWidth = symbolInfo.width;
         imageHeight = symbolInfo.height;
 

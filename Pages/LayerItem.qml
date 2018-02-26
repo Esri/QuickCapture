@@ -107,10 +107,22 @@ Item {
         }
 
         if (!uniqueValueInfo) {
-            console.warn("No uniquevalue match for value:", JSON.stringify(value));
+            console.warn("No unique value match for value:", JSON.stringify(value));
         }
 
         return uniqueValueInfo;
+    }
+
+    //--------------------------------------------------------------------------
+
+    function findSymbol(value) {
+        var uniqueValueInfo = findUniqueValueInfo(value);
+
+        if (uniqueValueInfo) {
+            return uniqueValueInfo.symbol;
+        } else {
+            return symbol;
+        }
     }
 
     //--------------------------------------------------------------------------

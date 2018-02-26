@@ -113,7 +113,7 @@ PageView {
                 Layout.fillWidth: true
 
                 enabled: dataService.points > 0 && !dataService.uploading
-                text: qsTr("Press and hold to delete all local data - %n feature(s)", "", dataService.points)
+                text: qsTr("Press and hold to delete all local data")
 
                 onActivated: {
                     dataService.deleteAll();

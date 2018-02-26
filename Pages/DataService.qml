@@ -362,6 +362,7 @@ Item {
         }
 
         createTables();
+        autoPolyEnd();
     }
 
     //--------------------------------------------------------------------------
@@ -801,7 +802,7 @@ Item {
 
     //--------------------------------------------------------------------------
 
-    function autoEnd() {
+    function autoPolyEnd() {
         console.log("Checking for in progress features");
 
         var featureQuery = database.query("SELECT * FROM Features WHERE Status = ?", kStatusInProgress);

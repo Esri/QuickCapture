@@ -57,8 +57,6 @@ PageView {
     //--------------------------------------------------------------------------
 
     Component.onCompleted: {
-        dataService.autoEnd();
-
         var options = dataService.parseOptions(dataService.itemInfo.accessInformation);
 
         console.log("Project options:", JSON.stringify(options, undefined, 2));

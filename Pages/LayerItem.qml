@@ -100,10 +100,14 @@ Item {
 
         var uniqueValueInfos = layerInfo.drawingInfo.renderer.uniqueValueInfos;
         for (var i = 0; i < uniqueValueInfos.length; i++) {
-            if (uniqueValueInfos[i].value === value) {
+            if (uniqueValueInfos[i].value == value) {
                 uniqueValueInfo = uniqueValueInfos[i];
                 break;
             }
+        }
+
+        if (!uniqueValueInfo) {
+            console.warn("No uniquevalue match for value:", JSON.stringify(value));
         }
 
         return uniqueValueInfo;

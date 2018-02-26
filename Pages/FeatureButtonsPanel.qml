@@ -57,7 +57,7 @@ GridLayout {
         var captureLayers = 0;
         dataService.featureServiceInfo.layers.forEach(function (layer) {
             if (kGeometryTypes.indexOf(layer.geometryType) >= 0
-                    && layer.types.length > 0) {
+                    && (layer.templates.length > 0 || layer.types.length > 0)) {
                 captureLayers++;
             }
         });
@@ -70,7 +70,7 @@ GridLayout {
     //--------------------------------------------------------------------------
 
     function addLayer(layerInfo, multipleLayers) {
-        console.log("Layer:", layerInfo.id, layerInfo.name);
+        console.log("Layer:", layerInfo.id, layerInfo.name, "mutiple:", multipleLayers);
 
         if (kGeometryTypes.indexOf(layerInfo.geometryType) < 0) {
             return;

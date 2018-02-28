@@ -12,7 +12,7 @@
         "location": true,
         "microphone": false,
         "network": true,
-        "storage": false,
+        "storage": true,
         "vibration": false
     },
     "deployment": {

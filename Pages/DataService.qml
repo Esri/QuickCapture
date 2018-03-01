@@ -725,22 +725,30 @@ Item {
 
         var pointsQuery = database.query("SELECT * FROM Points WHERE FeatureId = ? ORDER BY Timestamp", featureId);
 
-        var path = "[";
+        var points = "[";
         var count = 0;
         var firstPoint;
+
+        var lastX;
+        var lastY;
 
         if (pointsQuery.first()) {
             do {
                 var x = pointsQuery.value("longitude");
                 var y = pointsQuery.value("latitude");
 
+                if (x === lastX && y === lastY) {
+                    console.log("Skipping duplicate coordinate:", x, y);
+                    continue;
+                }
+
                 if (count) {
-                    path += ",";
+                    points += ",";
                 }
 
 
-                var point = "[%1,%2]".arg(x).arg(y);
-                path += point;
+                var point = "[%1,%2]".arg(x.toPrecision()).arg(y.toPrecision());
+                points += point;
 
                 if (!count) {
                     firstPoint = point;
@@ -752,23 +760,25 @@ Item {
         }
 
 
-        if (layer.geometryType === kGeometryPolygon && count) {
+        var isPolygon = layer.geometryType === kGeometryPolygon;
+        if (isPolygon && count) {
             console.log("Closing polygon");
-            path += "," + firstPoint;
+            points += "," + firstPoint;
         }
 
-        path += "]";
+        points += "]";
 
         pointsQuery.finish();
 
+        //console.log("count:", count, "points:", points);
+
         var geometry = {
-            paths: "[" + path + "]",
             spatialReference: {
                 wkid: kWGS84
             }
         };
 
-        //console.log("count:", count, "path:", path);
+        geometry[isPolygon ? "rings": "paths"] = "[" + points + "]";
 
         feature.geometry = geometry;
 

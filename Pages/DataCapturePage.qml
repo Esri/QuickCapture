@@ -80,6 +80,12 @@ PageView {
         if (options.backgroundColor) {
             backgroundFill.color = options.backgroundColor;
         }
+
+
+        AppFramework.environment.setValue("APPSTUDIO_POSITION_DESIRED_ACCURACY", "HIGHEST");
+        AppFramework.environment.setValue("APPSTUDIO_POSITION_ACTIVITY_MODE", "OTHERNAVIGATION");
+
+        positionSource.active = true;
     }
 
     //--------------------------------------------------------------------------
@@ -87,7 +93,7 @@ PageView {
     PositionSource {
         id: positionSource
 
-        active: true
+        active: false
 
         onPositionChanged: {
             if (position.latitudeValid && position.longitudeValid) {

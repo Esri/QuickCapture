@@ -725,9 +725,8 @@ Item {
 
         var pointsQuery = database.query("SELECT * FROM Points WHERE FeatureId = ? ORDER BY Timestamp", featureId);
 
-        var points = "[";
+        var points = [];
         var count = 0;
-        var firstPoint;
 
         var lastX;
         var lastY;
@@ -742,17 +741,9 @@ Item {
                     continue;
                 }
 
-                if (count) {
-                    points += ",";
-                }
+                var point = [x, y];
 
-
-                var point = "[%1,%2]".arg(x.toPrecision()).arg(y.toPrecision());
-                points += point;
-
-                if (!count) {
-                    firstPoint = point;
-                }
+                points.push(point);
 
                 count++;
 
@@ -763,14 +754,12 @@ Item {
         var isPolygon = layer.geometryType === kGeometryPolygon;
         if (isPolygon && count) {
             console.log("Closing polygon");
-            points += "," + firstPoint;
+            points.push(points[0]);
         }
-
-        points += "]";
 
         pointsQuery.finish();
 
-        //console.log("count:", count, "points:", points);
+        //console.log("count:", count, "points:", JSON.striginfy(points));
 
         var geometry = {
             spatialReference: {
@@ -778,7 +767,7 @@ Item {
             }
         };
 
-        geometry[isPolygon ? "rings": "paths"] = "[" + points + "]";
+        geometry[isPolygon ? "rings": "paths"] = [ points ];
 
         feature.geometry = geometry;
 

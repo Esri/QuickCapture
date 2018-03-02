@@ -2,7 +2,7 @@
     "arcgisRuntime": 0,
     "capabilities": {
         "audio": true,
-        "backgroundLocation": false,
+        "backgroundLocation": true,
         "biometricAuthentication": false,
         "bluetooth": false,
         "camera": false,

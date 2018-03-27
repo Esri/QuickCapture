@@ -243,23 +243,18 @@ PageView {
                 background: backgroundFill
                 currentPosition: page.currentPosition
 
-                onAddFeature: {
+                onAddPointFeature: {
                     lastInsertId = dataService.insertPointFeature(positionSource.position, layerId, template.prototype.attributes);
 
-                    if (config.captureVibrate) {
-                        Vibration.vibrate();
-                    }
+                    capturePointNotification(template);
+                }
 
-                    switch (config.captureSound) {
-                    case config.kSoundBeep :
-                        captureAudio.play();
-                        break;
+                onBeginPolyFeature: {
+//                    captureBeginNotification(template);
+                }
 
-                    case config.kSoundTextToSpeech :
-                        textToSpeech.say(template.name);
-                        break;
-                    }
-
+                onEndPolyFeature: {
+//                    captureEndNotification(template);
                 }
             }
         }
@@ -412,6 +407,8 @@ PageView {
         }
     }
 
+    //--------------------------------------------------------------------------
+
     function upload() {
         if (!dataService.portal.signedIn) {
             dataService.portal.autoSignIn();
@@ -419,6 +416,42 @@ PageView {
         }
 
         dataService.upload();
+    }
+
+    //--------------------------------------------------------------------------
+
+    function captureNotification(text) {
+        if (config.captureVibrate) {
+            Vibration.vibrate();
+        }
+
+        switch (config.captureSound) {
+        case config.kSoundBeep :
+            captureAudio.play();
+            break;
+
+        case config.kSoundTextToSpeech :
+            textToSpeech.say(text);
+            break;
+        }
+    }
+
+    //--------------------------------------------------------------------------
+
+    function capturePointNotification(template) {
+        captureNotification(template.name);
+    }
+
+    //--------------------------------------------------------------------------
+
+    function captureBeginNotification(template) {
+        captureNotification(qsTr("Begin %1").arg(template.name));
+    }
+
+    //--------------------------------------------------------------------------
+
+    function captureEndNotification(template) {
+        captureNotification(qsTr("End %1").arg(template.name));
     }
 
     //--------------------------------------------------------------------------

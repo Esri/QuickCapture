@@ -43,7 +43,9 @@ GridLayout {
 
     //--------------------------------------------------------------------------
 
-    signal addFeature(int layerId, var template)
+    signal addPointFeature(int layerId, var template)
+    signal beginPolyFeature(int layerId, var template)
+    signal endPolyFeature(int layerId, var template)
 
     //--------------------------------------------------------------------------
 
@@ -193,7 +195,7 @@ GridLayout {
 
     function addFeatureClicked(button) {
         console.log("addFeatureClicked:", button.layerId, button.template);
-        addFeature(button.layerId, button.template);
+        addPointFeature(button.layerId, button.template);
     }
 
     //--------------------------------------------------------------------------
@@ -257,6 +259,7 @@ GridLayout {
 
             onBeginFeature: {
                 dataService.beginPoly(currentFeatureId, layerId, template.prototype.attributes);
+                beginPolyFeature(layerId, template);
             }
 
             onAddFeaturePoint: {
@@ -265,6 +268,7 @@ GridLayout {
 
             onEndFeature: {
                 lastInsertId = dataService.endPoly(currentFeatureId);
+                endPolyFeature(layerId, template);
             }
         }
     }

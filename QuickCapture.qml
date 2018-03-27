@@ -39,6 +39,7 @@ App {
     property alias portal: portal
     property alias userInfo: userInfo
     property alias theme: theme
+    property alias config: config
 
     property alias fontFamily: theme.fontFamily
 
@@ -51,9 +52,17 @@ App {
     //--------------------------------------------------------------------------
 
     AppTheme {
-        id:theme
+        id: theme
 
         app: app
+    }
+
+    //--------------------------------------------------------------------------
+
+    Config {
+        id: config
+
+        settings: app.settings
     }
 
     //--------------------------------------------------------------------------

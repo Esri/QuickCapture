@@ -21,6 +21,8 @@ import QtQuick.Controls 2.2
 import ArcGIS.AppFramework 1.0
 
 import "../Portal"
+import "../Controls"
+
 
 
 PageView {
@@ -80,6 +82,23 @@ PageView {
 
     FileFolder {
         id: dataFolder
+    }
+
+    //--------------------------------------------------------------------------
+
+    StyledImageButton {
+        parent: page.actionItem
+
+        anchors {
+            fill: parent
+        }
+
+        source: "images/gear.png"
+
+        onClicked: {
+            forceActiveFocus();
+            page.StackView.view.push(configPage);
+        }
     }
 
     //--------------------------------------------------------------------------
@@ -169,6 +188,17 @@ PageView {
         BusyIndicator {
             anchors.centerIn: parent
             running: dataService.updating
+        }
+    }
+
+    //--------------------------------------------------------------------------
+
+    Component {
+        id: configPage
+
+        ConfigPage {
+            theme: app.theme
+            config: app.config
         }
     }
 

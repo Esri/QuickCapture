@@ -25,11 +25,15 @@ import QtGraphicalEffects 1.0
 
 import ArcGIS.AppFramework 1.0
 import ArcGIS.AppFramework.Sql 1.0
+import ArcGIS.AppFramework.Speech 1.0
+import ArcGIS.AppFramework.Notifications 1.0
 
 PageView {
     id: page
 
     //--------------------------------------------------------------------------
+
+    property Config config: app.config
 
     property DataService dataService
     property bool online
@@ -241,7 +245,21 @@ PageView {
 
                 onAddFeature: {
                     lastInsertId = dataService.insertPointFeature(positionSource.position, layerId, template.prototype.attributes);
-                    captureAudio.play();
+
+                    if (config.captureVibrate) {
+                        Vibration.vibrate();
+                    }
+
+                    switch (config.captureSound) {
+                    case config.kSoundBeep :
+                        captureAudio.play();
+                        break;
+
+                    case config.kSoundTextToSpeech :
+                        textToSpeech.say(template.name);
+                        break;
+                    }
+
                 }
             }
         }
@@ -341,13 +359,13 @@ PageView {
             RowLayout {
                 Layout.fillWidth: true
 
-                RoundButton {
+                DelayButton {
                     Layout.fillWidth: true
 
                     enabled: lastInsertId > 0
-                    text: qsTr("Delete last capture")
+                    text: qsTr("Press and hold to delete last capture")
 
-                    onClicked: {
+                    onActivated: {
                         dataService.deleteRow(lastInsertId);
                         lastInsertId = undefined;
                         deleteAudio.play();
@@ -369,6 +387,10 @@ PageView {
         id: deleteAudio
 
         source: "audio/delete.mp3"
+    }
+
+    TextToSpeech {
+        id: textToSpeech
     }
 
     //--------------------------------------------------------------------------

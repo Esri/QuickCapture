@@ -102,10 +102,17 @@ Rectangle {
         }
 
         Item {
-            id: actionItem
-
             Layout.preferredHeight: parent.height
             Layout.preferredWidth: Layout.preferredHeight
+
+            Item {
+                id: actionItem
+
+                anchors {
+                    fill: parent
+                    margins: 3 * AppFramework.displayScaleFactor - rowLayout.anchors.margins
+                }
+            }
         }
     }
 

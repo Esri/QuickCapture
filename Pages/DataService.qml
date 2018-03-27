@@ -54,6 +54,8 @@ Item {
     property bool uploading
     property int points
 
+    property var tag: null
+
     //--------------------------------------------------------------------------
 
     readonly property string kGeometryPoint: "esriGeometryPoint"
@@ -549,6 +551,10 @@ Item {
             switch (value) {
             case "${username}":
                 value = userInfo.info.username;
+                break;
+
+            case "${tag}":
+                value = tag;
                 break;
             }
         }

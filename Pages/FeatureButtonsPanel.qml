@@ -30,6 +30,7 @@ GridLayout {
     property DataService dataService
     property Rectangle background
     property var currentPosition
+    property bool showTag: false
 
     readonly property real columnWidth: (width - (columns - 1) * columnSpacing) / columns
 
@@ -67,6 +68,8 @@ GridLayout {
         dataService.featureServiceInfo.layers.forEach(function (layer) {
             addLayer(layer, captureLayers > 1);
         });
+
+        console.log("showTag:", showTag);
     }
 
     //--------------------------------------------------------------------------
@@ -189,6 +192,25 @@ GridLayout {
         }
 
         buttonItem.addFeature.connect(addFeatureClicked);
+
+        tagCheck(templateInfo.prototype.attributes);
+    }
+
+    //--------------------------------------------------------------------------
+
+    function tagCheck(attributes) {
+        if (showTag) {
+            return;
+        }
+
+        var keys = Object.keys(attributes);
+        keys.forEach(function (key) {
+            var value = attributes[key];
+
+            if (value === "${tag}") {
+                showTag = true;
+            }
+        });
     }
 
     //--------------------------------------------------------------------------

@@ -39,7 +39,7 @@ PageView {
     property bool online
     property var coordinate: QtPositioning.coordinate()
     property var coordinateInfo: Coordinate.convert(coordinate, "ddm")
-    property color coordinateColor: "white"
+    property color coordinateColor: theme.textColor
     property real horizontalAccuracy
     property var lastInsertId
     property var currentPosition
@@ -47,7 +47,7 @@ PageView {
     property bool showMap: false
     property real directionSpeedThreshold: 0.5
 
-    property color accuracyGoodColor: theme.textColor
+    property color accuracyGoodColor: "green"
     property color accuracyAlertColor: "#FFBF00"
     property color accuracyPoorColor: "red"
 
@@ -250,11 +250,11 @@ PageView {
                 }
 
                 onBeginPolyFeature: {
-//                    captureBeginNotification(template);
+                    //                    captureBeginNotification(template);
                 }
 
                 onEndPolyFeature: {
-//                    captureEndNotification(template);
+                    //                    captureEndNotification(template);
                 }
             }
         }
@@ -279,6 +279,28 @@ PageView {
                 margins: 10 * AppFramework.displayScaleFactor
             }
 
+            RowLayout {
+                Layout.fillWidth: true
+
+                visible: featureButtonsPanel.showTag
+
+                Label {
+                    text: qsTr("Tag")
+                    color: theme.textColor
+                }
+
+                TextField {
+                    Layout.fillWidth: true
+
+                    placeholderText: qsTr("Tag value")
+                    text: dataService.tag || ""
+
+                    onEditingFinished: {
+                        var value = text.trim();
+                        dataService.tag = value > "" ? value : null;
+                    }
+                }
+            }
 
             Map {
                 id: map

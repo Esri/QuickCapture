@@ -533,7 +533,7 @@ Item {
                 break;
 
             case 80:
-                value = validValue(position.direcitonValid, position.direction);
+                value = validValue(position.directionValid, position.direction);
                 break;
 
             case 90:

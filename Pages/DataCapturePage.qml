@@ -284,25 +284,62 @@ PageView {
                 margins: 10 * AppFramework.displayScaleFactor
             }
 
-            RowLayout {
+            ColumnLayout {
                 Layout.fillWidth: true
 
                 visible: featureButtonsPanel.showTag
 
-                Label {
-                    text: qsTr("Tag")
-                    color: theme.textColor
-                }
-
-                TextField {
+                Text {
                     Layout.fillWidth: true
 
-                    placeholderText: qsTr("Tag value")
-                    text: dataService.tag || ""
+                    visible: !tagInput.visible
 
-                    onTextChanged: {
-                        var value = text.trim();
-                        dataService.tag = value > "" ? value : null;
+                    text: qsTr("Tag <b>%1</b>").arg(dataService.tag)
+                    font {
+                        pointSize: 16
+                    }
+                    color: theme.textColor
+                    horizontalAlignment: Text.AlignHCenter
+                    wrapMode: Text.WrapAtWordBoundaryOrAnywhere
+
+                    MouseArea {
+                        anchors.fill: parent
+
+                        onClicked: {
+                            tagInput.visible = true;
+                        }
+                    }
+                }
+
+                RowLayout {
+                    id: tagInput
+
+                    Layout.fillWidth: true
+
+                    visible: !dataService.tag
+
+                    Label {
+                        text: qsTr("Tag")
+                        color: theme.textColor
+                    }
+
+                    TextField {
+                        Layout.fillWidth: true
+
+                        placeholderText: qsTr("Enter a tag value")
+                        text: dataService.tag || ""
+
+                        onTextChanged: {
+                            tagInput.visible = true;
+                            var value = text.trim();
+                            dataService.tag = value > "" ? value : null;
+                        }
+
+                        onEditingFinished: {
+                            if (text.trim() > "") {
+                                tagInput.visible = false;
+                            }
+                        }
                     }
                 }
             }
@@ -385,6 +422,7 @@ PageView {
                     Layout.fillWidth: true
 
                     enabled: lastInsertId > 0
+                    delay: 500
                     text: qsTr("Press and hold to delete last capture")
 
                     onActivated: {

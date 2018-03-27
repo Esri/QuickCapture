@@ -56,6 +56,8 @@ Item {
 
     property var tag: null
 
+    property bool debug: false
+
     //--------------------------------------------------------------------------
 
     readonly property string kGeometryPoint: "esriGeometryPoint"
@@ -379,8 +381,10 @@ Item {
     
     //--------------------------------------------------------------------------
     
-    function insertPointFeature(position, layerId, attributes) {
-        console.log(JSON.stringify(position));
+    function insertPointFeature(properties, layerId, attributes) {
+        console.log(JSON.stringify(properties));
+
+        var position = properties.position;
 
         var layer = findLayer(layerId);
 
@@ -398,7 +402,7 @@ Item {
 
         var feature = {
             geometry: geometry,
-            attributes: replaceVariables(layerId, clone(attributes), position)
+            attributes: replaceVariables(layerId, clone(attributes), properties)
         }
 
         console.log("Insert layerId:", layerId, "feature:", JSON.stringify(feature, undefined, 2));
@@ -418,12 +422,12 @@ Item {
 
     //--------------------------------------------------------------------------
 
-    function replaceVariables(layerId, attributes, position) {
+    function replaceVariables(layerId, attributes, properties) {
         var keys = Object.keys(attributes);
 
         keys.forEach(function (key) {
             var field = findField(layerId, key);
-            attributes[key] = replaceVariable(field, attributes[key], position);
+            attributes[key] = replaceVariable(field, attributes[key], properties);
         });
 
         return attributes;
@@ -448,9 +452,12 @@ Item {
     //  0080   direction
     //  0090   magneticVariation
 
-    function replaceVariable(field, value, position) {
-        //console.log("field:", JSON.stringify(field), "value:", value);
+    function replaceVariable(field, value, properties) {
+        if (debug) {
+            console.log("replaceVariable field:", JSON.stringify(field), "value:", value, typeof value, "properties:", JSON.stringify(properties));
+        }
 
+        var position = properties.position;
         if (!position) {
             position = {};
         }
@@ -483,6 +490,23 @@ Item {
             }
 
             return speed;
+        }
+
+        if (field.type == "esriFieldTypeDate") {
+            console.log("Date:", new Date(value));
+            switch (value) {
+            case -31575600000: // 1-Jan-1969
+                if (properties.startDateTime) {
+                    value = properties.startDateTime.valueOf();
+                }
+                break;
+
+            case -126000000: // 31-Dec-1969
+                if (properties.endDateTime) {
+                    value = properties.endDateTime.valueOf();
+                }
+                break;
+            }
         }
 
 
@@ -559,7 +583,9 @@ Item {
             }
         }
 
-        // console.log("Return:", key, "=", value);
+        if (debug) {
+            console.log("Return:", field.name, "=", value);
+        }
 
         return value;
     }
@@ -693,9 +719,9 @@ Item {
 
     //--------------------------------------------------------------------------
 
-    function beginPoly(featureId, layerId, attributes) {
+    function beginPoly(featureId, layerId, attributes, properties) {
         var feature = {
-            attributes: replaceVariables(layerId, clone(attributes), null)
+            attributes: replaceVariables(layerId, clone(attributes), properties)
         }
 
         console.log("Insert layerId:", layerId, "feature:", JSON.stringify(feature, undefined, 2));
@@ -712,7 +738,7 @@ Item {
 
     //--------------------------------------------------------------------------
 
-    function endPoly(featureId) {
+    function endPoly(featureId, properties) {
         console.log("Ending poly:", featureId);
 
         var featureQuery = database.query("SELECT rowid, * FROM Features WHERE FeatureId = ?", featureId);
@@ -723,6 +749,7 @@ Item {
         }
 
         var rowId = featureQuery.value("rowid");
+        var layerId = featureQuery.value("LayerId");
         var feature = JSON.parse(featureQuery.value("Feature"));
 
         var layer = findLayer(featureQuery.value("LayerId"));
@@ -776,8 +803,9 @@ Item {
         geometry[isPolygon ? "rings": "paths"] = [ points ];
 
         feature.geometry = geometry;
+        replaceVariables(layerId, feature.attributes, properties);
 
-        console.log("End feature:", featureId, JSON.stringify(feature));
+        console.log("End feature:", featureId, JSON.stringify(feature, undefined, 2));
 
         var updateQuery = database.query("UPDATE Features SET Status = ?, Feature = ? WHERE FeatureId = ?",
                                          kStatusReady,
@@ -818,7 +846,11 @@ Item {
         }
 
         do {
-            endPoly(featureQuery.value("FeatureId"));
+            var properties = {
+                endDateTime: new Date()
+            };
+
+            endPoly(featureQuery.value("FeatureId"), properties);
         } while (featureQuery.next());
 
         featureQuery.finish();

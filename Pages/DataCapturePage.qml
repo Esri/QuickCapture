@@ -244,7 +244,11 @@ PageView {
                 currentPosition: page.currentPosition
 
                 onAddPointFeature: {
-                    lastInsertId = dataService.insertPointFeature(positionSource.position, layerId, template.prototype.attributes);
+                    var properties = {
+                        position: positionSource.position
+                    }
+
+                    lastInsertId = dataService.insertPointFeature(properties, layerId, template.prototype.attributes);
 
                     capturePointNotification(template);
                 }

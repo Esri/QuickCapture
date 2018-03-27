@@ -280,7 +280,11 @@ GridLayout {
             flashOn: flashTimer.flashOn
 
             onBeginFeature: {
-                dataService.beginPoly(currentFeatureId, layerId, template.prototype.attributes);
+                var properties = {
+                    startDateTime: startTime
+                };
+
+                dataService.beginPoly(currentFeatureId, layerId, template.prototype.attributes, properties);
                 beginPolyFeature(layerId, template);
             }
 
@@ -289,7 +293,11 @@ GridLayout {
             }
 
             onEndFeature: {
-                lastInsertId = dataService.endPoly(currentFeatureId);
+                var properties = {
+                    endDateTime: new Date()
+                };
+
+                lastInsertId = dataService.endPoly(currentFeatureId, properties);
                 endPolyFeature(layerId, template);
             }
         }

@@ -36,7 +36,7 @@ Button {
     property color textColor: "black"
 
     property color downTextColor: textColor
-    property color downBorderColor: "darkgrey"
+    property color downBorderColor: textColor//"darkgrey"
 
     property color backgroundColor: symbol.color
     property color borderColor: symbol.outlineColor
@@ -87,7 +87,7 @@ Button {
     text: template.name
 
     font {
-        pointSize: 14
+        pointSize: 14 * (control.down ? 1.2 : 1)
         bold: control.down
     }
     
@@ -101,7 +101,7 @@ Button {
         opacity: enabled ? 1 : 0.3
         border {
             color: control.down ? downBorderColor : borderColor
-            width: borderWidth * control.down ? 1 : 1.3
+            width: borderWidth * control.down ? 1 : 2
         }
 
         radius: 5 * AppFramework.displayScaleFactor

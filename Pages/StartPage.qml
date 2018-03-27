@@ -193,7 +193,7 @@ Rectangle {
             text: qsTr("Version %1").arg(app.info.version)
             horizontalAlignment: Text.AlignHCenter
             font {
-                pointSize: 10
+                pointSize: 14
             }
             color: "white"
 

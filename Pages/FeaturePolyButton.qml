@@ -141,7 +141,7 @@ FeatureButton {
     //--------------------------------------------------------------------------
 
     onClicked: {
-        console.log("checked:", checked, currentFeatureId);
+        console.log("checked:", checked, "active:", active, "currentFeatureId:", currentFeatureId);
 
         if (active) {
             active = false;
@@ -156,6 +156,7 @@ FeatureButton {
 
         if (!checked) {
             endPoly();
+            active = false;
         } else {
             beginPoly();
         }

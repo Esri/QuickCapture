@@ -42,9 +42,16 @@ Button {
     property color borderColor: symbol.outlineColor
     property real borderWidth: symbol.outlineWidth * symbol.scaleFactor
 
+    property bool requiresTag: false
+    property bool tagAvailable: false
+
     //--------------------------------------------------------------------------
 
     signal addFeature(var button)
+
+    //--------------------------------------------------------------------------
+
+    enabled: !requiresTag || (requiresTag && tagAvailable)
 
     //--------------------------------------------------------------------------
 

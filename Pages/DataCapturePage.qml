@@ -242,6 +242,7 @@ PageView {
                 dataService: page.dataService
                 background: backgroundFill
                 currentPosition: page.currentPosition
+                tagAvailable: dataService.tag > ""
 
                 onAddPointFeature: {
                     var properties = {
@@ -299,7 +300,7 @@ PageView {
                     placeholderText: qsTr("Tag value")
                     text: dataService.tag || ""
 
-                    onEditingFinished: {
+                    onTextChanged: {
                         var value = text.trim();
                         dataService.tag = value > "" ? value : null;
                     }

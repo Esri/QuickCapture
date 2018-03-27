@@ -31,6 +31,7 @@ GridLayout {
     property Rectangle background
     property var currentPosition
     property bool showTag: false
+    property bool tagAvailable: false
 
     readonly property real columnWidth: (width - (columns - 1) * columnSpacing) / columns
 
@@ -165,6 +166,8 @@ GridLayout {
             return;
         }
 
+        var requiresTag = tagCheck(templateInfo.prototype.attributes);
+
         var buttonItem = buttonComponent.createObject(panel,
                                                       {
                                                           buttonGroup: buttonGroup,
@@ -172,7 +175,8 @@ GridLayout {
                                                           template: templateInfo,
                                                           description: description,
                                                           options: options,
-                                                          symbol: symbol
+                                                          symbol: symbol,
+                                                          requiresTag: requiresTag
                                                       });
 
         buttonItem.Layout.fillHeight = true;
@@ -193,24 +197,27 @@ GridLayout {
 
         buttonItem.addFeature.connect(addFeatureClicked);
 
-        tagCheck(templateInfo.prototype.attributes);
+        if (requiresTag) {
+            showTag = true;
+            buttonItem.tagAvailable = Qt.binding(function () { return tagAvailable; });
+        }
     }
 
     //--------------------------------------------------------------------------
 
     function tagCheck(attributes) {
-        if (showTag) {
-            return;
-        }
+        var tag = false;
 
         var keys = Object.keys(attributes);
         keys.forEach(function (key) {
             var value = attributes[key];
 
             if (value === "${tag}") {
-                showTag = true;
+                tag = true;
             }
         });
+
+        return tag;
     }
 
     //--------------------------------------------------------------------------

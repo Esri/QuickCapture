@@ -423,10 +423,18 @@ Item {
     //--------------------------------------------------------------------------
 
     function replaceVariables(layerId, attributes, properties) {
+        if (debug) {
+            console.log("replaceVariables layerId:", layerId, "attributes:", JSON.stringify(attributes, undefined, 2), "properties:", JSON.stringify(properties, undefined, 2));
+        }
+
         var keys = Object.keys(attributes);
 
         keys.forEach(function (key) {
             var field = findField(layerId, key);
+            if (!field) {
+                console.warn("No field for key:", key);
+            }
+
             attributes[key] = replaceVariable(field, attributes[key], properties);
         });
 
@@ -492,20 +500,24 @@ Item {
             return speed;
         }
 
-        if (field.type == "esriFieldTypeDate") {
-            console.log("Date:", new Date(value));
-            switch (value) {
-            case -31575600000: // 1-Jan-1969
-                if (properties.startDateTime) {
-                    value = properties.startDateTime.valueOf();
-                }
-                break;
+        if (field) {
+            switch (field.type) {
+            case "esriFieldTypeDate": {
+                console.log("Date:", new Date(value));
+                switch (value) {
+                case -31575600000: // 1-Jan-1969
+                    if (properties.startDateTime) {
+                        value = properties.startDateTime.valueOf();
+                    }
+                    break;
 
-            case -126000000: // 31-Dec-1969
-                if (properties.endDateTime) {
-                    value = properties.endDateTime.valueOf();
+                case -126000000: // 31-Dec-1969
+                    if (properties.endDateTime) {
+                        value = properties.endDateTime.valueOf();
+                    }
+                    break;
                 }
-                break;
+            }
             }
         }
 
@@ -584,7 +596,7 @@ Item {
         }
 
         if (debug) {
-            console.log("Return:", field.name, "=", value);
+            console.log("Replacement value:", value);
         }
 
         return value;

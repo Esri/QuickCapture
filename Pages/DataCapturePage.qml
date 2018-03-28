@@ -255,11 +255,11 @@ PageView {
                 }
 
                 onBeginPolyFeature: {
-                    //                    captureBeginNotification(template);
+                    captureBeginNotification(template);
                 }
 
                 onEndPolyFeature: {
-                    //                    captureEndNotification(template);
+                    captureEndNotification(template);
                 }
             }
         }
@@ -510,7 +510,7 @@ PageView {
     //--------------------------------------------------------------------------
 
     function captureBeginNotification(template) {
-        captureNotification(qsTr("Begin %1").arg(template.name));
+        captureNotification(qsTr("Starting %1").arg(template.name));
     }
 
     //--------------------------------------------------------------------------

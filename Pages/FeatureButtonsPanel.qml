@@ -32,6 +32,7 @@ GridLayout {
     property var currentPosition
     property bool showTag: false
     property bool tagAvailable: false
+    property var buttonGroups: ({})
 
     readonly property real columnWidth: (width - (columns - 1) * columnSpacing) / columns
 
@@ -89,6 +90,8 @@ GridLayout {
         //        var name = dataService.parseText(layerInfo.description);
         var options = dataService.parseOptions(layerInfo.description);
 
+        console.log("options:", JSON.stringify(options, undefined, 2));
+
         var layerItem = layerItemComponent.createObject(panel,
                                                         {
                                                             layerInfo: layerInfo,
@@ -109,10 +112,11 @@ GridLayout {
     //--------------------------------------------------------------------------
 
     function addType(layerItem, typeInfo) {
-        console.log("Type:", typeInfo.id, typeInfo.name);
 
         var name = dataService.parseText(typeInfo.name);
         var options = dataService.parseOptions(typeInfo.name);
+
+        console.log("Type:", typeInfo.id, "name:", typeInfo.name, "options:", JSON.stringify(options, undefined, 2));
 
         //console.log("UV:", JSON.stringify(uniqueValueInfo, undefined, 2));
 
@@ -138,12 +142,12 @@ GridLayout {
 
     function addTemplate(layerItem, typeItem, templateInfo, index, array) {
 
-        console.log("Template:", templateInfo.name, templateInfo.description);
-
         var description = dataService.parseText(templateInfo.description);
         var options = dataService.parseOptions(templateInfo.description);
         var symbol = typeItem ? typeItem.symbol : layerItem.symbol;
         var groupItemVisible = typeItem ? typeItem.visible : layerItem.visible;
+
+        console.log("Template:", templateInfo.name, templateInfo.description, "options:", JSON.stringify(options, undefined, 2));
 
         var buttonComponent;
 
@@ -164,6 +168,16 @@ GridLayout {
         if (!buttonComponent) {
             console.error("Null button component");
             return;
+        }
+
+        if (options.group > "") {
+            var group = options.group;
+            buttonGroup = buttonGroups[group];
+            if (!buttonGroup) {
+                console.log("Creating group:", group);
+                buttonGroup = buttonGroupComponent.createObject(panel);
+                buttonGroups[group] = buttonGroup;
+            }
         }
 
         var requiresTag = tagCheck(templateInfo.prototype.attributes);
@@ -307,6 +321,15 @@ GridLayout {
                 lastInsertId = dataService.endPoly(currentFeatureId, properties);
                 endPolyFeature(layerId, template);
             }
+        }
+    }
+
+    //--------------------------------------------------------------------------
+
+    Component {
+        id: buttonGroupComponent
+
+        ButtonGroup {
         }
     }
 

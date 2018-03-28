@@ -237,8 +237,8 @@ Item {
                         try {
                             value = JSON.parse('{"value":%1}'.arg(value)).value;
                         } catch (e) {
-                            console.log("Unable to parse value:", value);
-                            value = undefined;
+                            console.log("Unable to parse value:", JSON.stringify(value));
+                            //value = undefined;
                         }
 
                         try {

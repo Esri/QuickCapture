@@ -17,8 +17,10 @@
 import QtQuick 2.9
 import QtQuick.Layouts 1.3
 import QtQuick.Controls 2.2
+import QtPositioning 5.8
 
 import ArcGIS.AppFramework 1.0
+
 
 
 FeatureButton {
@@ -204,11 +206,13 @@ FeatureButton {
         var interval = (currentPosition.timestamp.valueOf() - lastPosition.timestamp.valueOf()) / 1000;
         var distance = lastPosition.coordinate.distanceTo(currentPosition.coordinate);
 
-        console.log("interval:", interval, "<", minimumInterval, interval < minimumInterval, "distance:", distance, "<", minimumDistance, distance < minimumDistance);
 
-        if (interval < minimumInterval || distance < minimumDistance) {
+        if (!(interval >= minimumInterval && distance >= minimumDistance)) {
+            console.log("Position requirements not met - interval:", interval, ">=", minimumInterval, interval >= minimumInterval, "distance:", distance, ">=", minimumDistance, distance >= minimumDistance);
             return;
         }
+
+        console.log("Adding position - interval:", interval, ">=", minimumInterval, interval >= minimumInterval, "distance:", distance, ">=", minimumDistance, distance >= minimumDistance);
 
         addPosition();
     }
@@ -216,7 +220,10 @@ FeatureButton {
     //--------------------------------------------------------------------------
 
     function addPosition() {
-        lastPosition = currentPosition;
+        lastPosition = {
+            timestamp: new Date(currentPosition.timestamp.valueOf()),
+            coordinate: QtPositioning.coordinate(currentPosition.coordinate.latitude, currentPosition.coordinate.longitude, currentPosition.coordinate.altitude)
+        }
 
         //console.log("Add position:", JSON.stringify(currentPosition));
 

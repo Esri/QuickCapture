@@ -70,6 +70,12 @@ Item {
     readonly property int kStatusReady: 0
     readonly property int kStatusInProgress: 1
 
+    readonly property date kDateStart: "1969-07-16"
+    readonly property date kDateStartAlt: "1969-01-01"
+    readonly property date kDateTimestamp: "1969-07-20"
+    readonly property date kDateEnd: "1969-07-24"
+    readonly property date kDateEndAlt: "1969-12-31"
+
     //--------------------------------------------------------------------------
 
     signal created()
@@ -78,6 +84,15 @@ Item {
     signal uploaded();
     signal downloaded();
     signal deleted();
+
+    //--------------------------------------------------------------------------
+
+    Component.onCompleted: {
+        console.log("Special values:");
+        console.log("      Start:", kDateStart);
+        console.log("  Timestamp:", kDateTimestamp);
+        console.log("        End:", kDateEnd);
+    }
 
     //--------------------------------------------------------------------------
 
@@ -503,23 +518,28 @@ Item {
         if (field) {
             switch (field.type) {
             case "esriFieldTypeDate": {
-                console.log("Checking field:", field.name, "value:", new Date(value));
-                switch (value) {
-                case -31575600000: // 1-Jan-1969
-                case -14637600000: // 16-Jul-1969
+                var checkDate = new Date(value);
+                checkDate.setHours(0);
+                checkDate.setMinutes(0);
+                checkDate.setSeconds(0)
+
+                console.log("Checking field:", field.name, "value:", new Date(value), "checkDate:", checkDate);
+                switch (checkDate.valueOf()) {
+                case kDateStart.valueOf():
+                case kDateStartAlt.valueOf():
                     if (properties.startDateTime) {
                         value = properties.startDateTime.valueOf();
                     }
                     break;
 
-                case -126000000: // 31-Dec-1969
-                case -13946400000: // 24-Jul-1969
+                case kDateEnd.valueOf():
+                case kDateEndAlt.valueOf():
                     if (properties.endDateTime) {
                         value = properties.endDateTime.valueOf();
                     }
                     break;
 
-                case -14292000000: // 20-Jul-1969
+                case kDateTimestamp.valueOf():
                     if (position.timestamp) {
                         value = position.timestamp.valueOf();
                     }

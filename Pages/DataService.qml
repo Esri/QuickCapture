@@ -503,20 +503,30 @@ Item {
         if (field) {
             switch (field.type) {
             case "esriFieldTypeDate": {
-                console.log("Date:", new Date(value));
+                console.log("Checking field:", field.name, "value:", new Date(value));
                 switch (value) {
                 case -31575600000: // 1-Jan-1969
+                case -14637600000: // 16-Jul-1969
                     if (properties.startDateTime) {
                         value = properties.startDateTime.valueOf();
                     }
                     break;
 
                 case -126000000: // 31-Dec-1969
+                case -13946400000: // 24-Jul-1969
                     if (properties.endDateTime) {
                         value = properties.endDateTime.valueOf();
                     }
                     break;
+
+                case -14292000000: // 20-Jul-1969
+                    if (position.timestamp) {
+                        value = position.timestamp.valueOf();
+                    }
+                    break;
                 }
+
+                console.log("Replacement value:", new Date(value));
             }
             }
         }

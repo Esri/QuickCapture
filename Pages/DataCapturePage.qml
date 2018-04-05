@@ -246,7 +246,9 @@ PageView {
 
                 onAddPointFeature: {
                     var properties = {
-                        position: positionSource.position
+                        position: positionSource.position,
+                        startDateTime: positionSource.position.timestamp,
+                        endDateTime: positionSource.position.timestamp
                     }
 
                     lastInsertId = dataService.insertPointFeature(properties, layerId, template.prototype.attributes);

@@ -169,7 +169,7 @@ FeatureButton {
     function beginPoly() {
         startTime = new Date();
         lastPosition = null;
-        currentFeatureId = AppFramework.createUuidString(2);
+        currentFeatureId = AppFramework.createUuidString(0).toUpperCase();
         console.log("Begin poly:", template.name, currentFeatureId);
 
         beginFeature();

@@ -27,6 +27,7 @@ import ArcGIS.AppFramework 1.0
 import ArcGIS.AppFramework.Sql 1.0
 import ArcGIS.AppFramework.Speech 1.0
 import ArcGIS.AppFramework.Notifications 1.0
+import ArcGIS.AppFramework.Networking 1.0
 
 PageView {
     id: page
@@ -90,6 +91,10 @@ PageView {
         AppFramework.environment.setValue("APPSTUDIO_POSITION_ACTIVITY_MODE", "OTHERNAVIGATION");
 
         positionSource.active = true;
+
+        if (featureButtonsPanel.useCamera) {
+            camera.cameraState = Camera.ActiveState;
+        }
     }
 
     //--------------------------------------------------------------------------
@@ -251,9 +256,11 @@ PageView {
                         endDateTime: positionSource.position.timestamp
                     }
 
-                    lastInsertId = dataService.insertPointFeature(properties, layerId, template.prototype.attributes);
-
-                    capturePointNotification(template);
+                    if ( featureButton.options.captureImage) {
+                        camera.captureImage(featureButton, properties);
+                    } else {
+                        addPoint(featureButton, properties);
+                    }
                 }
 
                 onBeginPolyFeature: {
@@ -346,53 +353,77 @@ PageView {
                 }
             }
 
-            Map {
-                id: map
+            RowLayout {
+                id: previewLayout
 
                 Layout.fillWidth: true
                 Layout.preferredHeight: 100 * AppFramework.displayScaleFactor
 
-                visible: showMap
+                visible: false
 
-                plugin: Plugin {
-                    preferred: ["AppStudio"]
-                }
+                Map {
+                    id: map
 
-                zoomLevel: 18
+                    Layout.fillWidth: true
+                    Layout.fillHeight: true
 
-                gesture {
-                    acceptedGestures: MapGestureArea.PinchGesture
-                }
+                    visible: Networking.isOnline //&& showMap
 
-                //activeMapType: supportedMapTypes[0]
+                    plugin: Plugin {
+                        preferred: ["AppStudio"]
+                    }
 
-                onCopyrightLinkActivated: {
-                    Qt.openUrlExternally(link);
-                }
+                    zoomLevel: 18
 
-                Rectangle {
-                    anchors.horizontalCenter: parent.horizontalCenter
-                    anchors.verticalCenter: parent.verticalCenter
-                    width: parent.width / 2
-                    height: 1
-                    color: "black"
-                }
+                    gesture {
+                        acceptedGestures: MapGestureArea.PinchGesture
+                    }
 
-                Rectangle {
-                    anchors.horizontalCenter: parent.horizontalCenter
-                    anchors.verticalCenter: parent.verticalCenter
-                    width: 1
-                    height: parent.height / 2
-                    color: "black"
-                }
+                    //activeMapType: supportedMapTypes[0]
 
-                Rectangle {
-                    anchors.fill: parent
+                    onCopyrightLinkActivated: {
+                        Qt.openUrlExternally(link);
+                    }
 
-                    color: "transparent"
-                    border {
-                        width: 1
+                    Rectangle {
+                        anchors.horizontalCenter: parent.horizontalCenter
+                        anchors.verticalCenter: parent.verticalCenter
+                        width: parent.width / 2
+                        height: 1
                         color: "black"
+                    }
+
+                    Rectangle {
+                        anchors.horizontalCenter: parent.horizontalCenter
+                        anchors.verticalCenter: parent.verticalCenter
+                        width: 1
+                        height: parent.height / 2
+                        color: "black"
+                    }
+
+                    Rectangle {
+                        anchors.fill: parent
+
+                        color: "transparent"
+                        border {
+                            width: 1
+                            color: "black"
+                        }
+                    }
+                }
+
+                Item {
+                    Layout.fillWidth: true
+                    Layout.fillHeight: true
+
+                    visible: featureButtonsPanel.useCamera
+
+                    VideoOutput {
+                        anchors.fill: parent
+
+                        source: camera
+                        fillMode: VideoOutput.PreserveAspectFit
+                        autoOrientation: true
                     }
                 }
             }
@@ -412,7 +443,8 @@ PageView {
                     anchors.fill: parent
 
                     onPressAndHold: {
-                        map.visible = !map.visible;
+                        previewLayout.visible = !previewLayout.visible;
+                        //                        map.visible = !map.visible;
                     }
                 }
             }
@@ -472,6 +504,27 @@ PageView {
                 upload();
             }
         }
+    }
+
+    //--------------------------------------------------------------------------
+
+    FeatureCamera {
+        id: camera
+
+        dataService: page.dataService
+    }
+
+    //--------------------------------------------------------------------------
+
+    function addPoint(featureButton, properties, attachmentPath) {
+
+        lastInsertId = dataService.insertPointFeature(
+                    properties,
+                    featureButton.layerId,
+                    featureButton.template.prototype.attributes,
+                    attachmentPath);
+
+        capturePointNotification(featureButton.template);
     }
 
     //--------------------------------------------------------------------------

@@ -27,6 +27,7 @@ Item {
 
     property Portal portal
     property alias folder: folder
+    property alias attachmentsFolder: attachmentsFolder
     property alias database: database
     property UserInfo userInfo
 
@@ -43,6 +44,7 @@ Item {
     readonly property string kSuffixItemInfo: "itemInfo"
     readonly property string kSuffixFeatureServiceInfo: "serviceInfo"
     readonly property string kSuffixDatabase: "sqlite"
+    readonly property string kSuffixAttachments: "attachments"
 
     readonly property string kOptionsTag: "//"
 
@@ -174,11 +176,15 @@ Item {
 
         console.log("Delete dataService files:", itemId);
 
+        var result = attachmentsFolder.removeFolder();
+
+        console.log("Delete attachments:", result, "path:", attachmentsFolder.path);
+
         close();
 
         files.forEach(function(fileName) {
-            var deleted = folder.removeFile(fileName);
-            console.log("Deleted:", deleted, "fileName:", fileName)
+            var result = folder.removeFile(fileName);
+            console.log("Deleted:", result, "fileName:", fileName)
         });
 
         deleted();
@@ -274,6 +280,12 @@ Item {
 
     FileFolder {
         id: folder
+    }
+
+    //--------------------------------------------------------------------------
+
+    FileFolder {
+        id: attachmentsFolder
     }
 
     //--------------------------------------------------------------------------
@@ -380,6 +392,9 @@ Item {
             return;
         }
 
+        attachmentsFolder.path = folder.filePath(itemInfo.id + "." + kSuffixAttachments);
+        attachmentsFolder.makeFolder();
+
         createTables();
         autoPolyEnd();
     }
@@ -392,11 +407,12 @@ Item {
 
         database.query("CREATE TABLE IF NOT EXISTS Features (Status INTEGER, FeatureId TEXT UNIQUE, Timestamp NUMBER, LayerId NUMBER, TypeId TEXT, Feature TEXT)");
         database.query("CREATE TABLE IF NOT EXISTS Points (FeatureId TEXT, Timestamp NUMBER, Latitude NUMBER, Longitude NUMBER, Altitude NUMBER, FOREIGN KEY(FeatureId) REFERENCES Features(FeatureId) ON UPDATE CASCADE ON DELETE CASCADE)");
+        database.query("CREATE TABLE IF NOT EXISTS Attachments (FeatureId TEXT, FileName TEXT, FOREIGN KEY(FeatureId) REFERENCES Features(FeatureId) ON UPDATE CASCADE ON DELETE CASCADE)");
     }
     
     //--------------------------------------------------------------------------
     
-    function insertPointFeature(properties, layerId, attributes) {
+    function insertPointFeature(properties, layerId, attributes, attachments) {
         console.log(JSON.stringify(properties));
 
         var position = properties.position;
@@ -422,17 +438,44 @@ Item {
 
         console.log("Insert layerId:", layerId, "feature:", JSON.stringify(feature, undefined, 2));
 
-        var query = database.query("INSERT INTO Features (Status, Timestamp, LayerId, Feature) VALUES (?,?,?,?)",
+        var featureId = AppFramework.createUuidString(0).toUpperCase();
+
+        var query = database.query("INSERT INTO Features (Status, FeatureId, Timestamp, LayerId, Feature) VALUES (?,?,?,?,?)",
                                    kStatusReady,
+                                   featureId,
                                    position.timestamp.valueOf(),
                                    layerId,
                                    JSON.stringify(feature));
 
-        console.log("insertId:", query.insertId);
+        var insertId = query.insertId;
+
+        console.log("feature insertId:", insertId);
+
+        if (Array.isArray(attachments)) {
+            attachments.forEach(function (attachment) {
+                addAttchment(featureId, attachment);
+            });
+        } else if (attachments > "") {
+            addAttchment(featureId, attachments);
+        }
 
         update();
 
-        return query.insertId;
+        return insertId;
+    }
+
+    //--------------------------------------------------------------------------
+
+    function addAttchment(featureId, fileName) {
+        if (!(fileName > "")) {
+            return;
+        }
+
+        var query = database.query("INSERT INTO Attachments (FeatureId, FileName) VALUES (?,?)",
+                                   featureId,
+                                   fileName);
+
+        console.log("attachment insertId:", query.insertId, "fileName:", fileName);
     }
 
     //--------------------------------------------------------------------------
@@ -649,7 +692,59 @@ Item {
 
     //--------------------------------------------------------------------------
 
+    function getFeatureRow(rowId) {
+        var featureQuery = database.query("SELECT rowid, * FROM Features WHERE rowid = ?", rowId);
+
+        if (!featureQuery.first()) {
+            console.error("Error finding feature:", rowId);
+            return;
+        }
+
+        var values = featureQuery.values;
+        values.feature = JSON.parse(featureQuery.value("Feature"));
+
+        featureQuery.finish();
+
+        values.attachments = getAttchments(values.FeatureId);
+
+        return values;
+    }
+
+    //--------------------------------------------------------------------------
+
+    function getAttchments(featureId) {
+        var attachments = [];
+
+        if (!(featureId > "")) {
+            return attachments;
+        }
+
+        var attachmentsQuery = database.query("SELECT * FROM Attachments WHERE FeatureId = ?", featureId);
+
+        if (attachmentsQuery.first()) {
+            do {
+                var fileName = attachmentsQuery.value("FileName");
+
+                attachments.push(fileName);
+
+            } while (attachmentsQuery.next());
+        }
+
+        attachmentsQuery.finish();
+
+        return attachments;
+    }
+
+    //--------------------------------------------------------------------------
+
     function deleteRow(rowId) {
+        var rowData = getFeatureRow(rowId);
+
+        rowData.attachments.forEach(function (fileName) {
+            var result = attachmentsFolder.removeFile(fileName);
+            console.log("Attachment deleted:", result, fileName);
+        });
+
         var query = database.query("DELETE FROM Features WHERE rowid = ?", rowId);
 
         console.log("rows deleted:", query.rowsAffected);
@@ -660,6 +755,9 @@ Item {
     //--------------------------------------------------------------------------
 
     function deleteAll() {
+        attachmentsFolder.removeFolder();
+        attachmentsFolder.makeFolder();
+
         var query = database.query("DELETE FROM Features");
 
         console.log("rows deleted:", query.rowsAffected);
@@ -706,14 +804,17 @@ Item {
     }
 
     function uploadNext() {
-        var query = database.query("SELECT rowid, LayerId, Feature From Features WHERE Status = ? LIMIT 1", kStatusReady);
+        var query = database.query("SELECT rowid, LayerId, FeatureId, Feature From Features WHERE Status = ? LIMIT 1", kStatusReady);
         if (!query.first()) {
             console.log("End of data reached");
             uploading = false;
             return;
         }
 
-        addFeatureRequest.addFeature(query.values);
+        var values = query.values;
+        values.attachments = getAttchments(values.FeatureId);
+
+        addFeatureRequest.addFeature(values);
     }
 
     //--------------------------------------------------------------------------
@@ -724,12 +825,15 @@ Item {
         portal: dataService.portal
         trace: true
 
-        property var rowId
+        property var rowData
 
         onSuccess: {
-            deleteRow(rowId);
-            uploaded();
-            uploadNext();
+            console.log("Features added:", JSON.stringify(response, undefined, 2));
+            var addResult = response.addResults[0];
+            if (addResult.success) {
+                rowData.addResult = addResult;
+                addAttachmentsRequest.addAttachments(rowData);
+            }
         }
 
         onError: {
@@ -739,6 +843,8 @@ Item {
         function addFeature(rowData) {
             console.log("Adding:", JSON.stringify(rowData, undefined, 2));
 
+            addFeatureRequest.rowData = rowData;
+
             var feature = JSON.parse(rowData.Feature);
             var features = [ feature ];
 
@@ -747,7 +853,56 @@ Item {
             };
 
             url = "%1/%2/addFeatures".arg(itemInfo.url).arg(rowData.LayerId);
-            rowId = rowData.rowid;
+
+            sendRequest(formData);
+        }
+    }
+
+    //--------------------------------------------------------------------------
+
+    PortalRequest {
+        id: addAttachmentsRequest
+
+        portal: dataService.portal
+        trace: true
+
+        property var rowData
+
+        onSuccess: {
+            console.log("Added attachment:", JSON.stringify(response, undefined, 2));
+            uploadNextAttachment();
+        }
+
+        onError: {
+            console.error("AddAttachment failed");
+        }
+
+        function addAttachments(rowData) {
+            console.log("Adding attachments:", JSON.stringify(rowData, undefined, 2));
+
+            addAttachmentsRequest.rowData = rowData;
+
+            uploadNextAttachment();
+        }
+
+        function uploadNextAttachment() {
+            if (rowData.attachments.length < 1) {
+                deleteRow(rowData.rowid);
+                uploaded();
+                uploadNext();
+
+                return;
+            }
+
+            var fileName = rowData.attachments.pop();
+
+            console.log("Adding attachment:", fileName);
+
+            var formData = {
+                attachment: uploadPrefix + attachmentsFolder.filePath(fileName)
+            };
+
+            url = "%1/%2/%3/addAttachment".arg(itemInfo.url).arg(rowData.LayerId).arg(rowData.addResult.objectId);
 
             sendRequest(formData);
         }

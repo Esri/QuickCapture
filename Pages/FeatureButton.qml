@@ -17,6 +17,7 @@
 import QtQuick 2.9
 import QtQuick.Layouts 1.3
 import QtQuick.Controls 2.2
+import QtGraphicalEffects 1.0
 
 import ArcGIS.AppFramework 1.0
 
@@ -87,6 +88,10 @@ Button {
         if (options.textColor) {
             textColor = options.textColor;
         }
+
+        if (options.captureImage) {
+            captureImageIndicator.visible = true;
+        }
     }
 
     //--------------------------------------------------------------------------
@@ -112,6 +117,40 @@ Button {
         }
 
         radius: 5 * AppFramework.displayScaleFactor
+
+        Item {
+            id: captureImageIndicator
+
+            anchors {
+                right: parent.right
+                bottom: parent.bottom
+                margins: parent.radius + parent.border.width
+            }
+
+            visible: false
+
+            width: 20 * AppFramework.displayScaleFactor
+            height: width
+
+            Image {
+                id: cameraImage
+
+                anchors.fill: parent
+
+                visible: false
+                source: "images/camera.png"
+                fillMode: Image.PreserveAspectFit
+                verticalAlignment: Image.AlignBottom
+                horizontalAlignment: Image.AlignRight
+            }
+
+            ColorOverlay {
+                source: cameraImage
+                anchors.fill: cameraImage
+                color: textColor
+            }
+        }
+
     }
 
     //--------------------------------------------------------------------------

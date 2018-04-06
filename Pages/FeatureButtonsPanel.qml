@@ -17,6 +17,7 @@
 import QtQuick 2.9
 import QtQuick.Layouts 1.3
 import QtQuick.Controls 2.2
+import QtMultimedia 5.9
 
 import ArcGIS.AppFramework 1.0
 
@@ -31,6 +32,7 @@ GridLayout {
     property Rectangle background
     property var currentPosition
     property bool showTag: false
+    property bool useCamera: false
     property bool tagAvailable: false
     property var buttonGroups: ({})
 
@@ -46,7 +48,7 @@ GridLayout {
 
     //--------------------------------------------------------------------------
 
-    signal addPointFeature(int layerId, var template)
+    signal addPointFeature(var featureButton)
     signal beginPolyFeature(int layerId, var template)
     signal endPolyFeature(int layerId, var template)
 
@@ -215,6 +217,10 @@ GridLayout {
             showTag = true;
             buttonItem.tagAvailable = Qt.binding(function () { return tagAvailable; });
         }
+
+        if (layerItem.layerInfo.hasAttachments && options.captureImage && QtMultimedia.availableCameras.length > 0) {
+            useCamera = true;
+        }
     }
 
     //--------------------------------------------------------------------------
@@ -238,7 +244,7 @@ GridLayout {
 
     function addFeatureClicked(button) {
         console.log("addFeatureClicked:", button.layerId, button.template);
-        addPointFeature(button.layerId, button.template);
+        addPointFeature(button);
     }
 
     //--------------------------------------------------------------------------

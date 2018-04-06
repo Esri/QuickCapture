@@ -292,6 +292,20 @@ Item {
 
     SqlDatabase {
         id: database
+
+        onErrorChanged: {
+            console.log("database error:", JSON.stringify(error));
+        }
+
+        SqlScalarFunction {
+            argumentTypes: ["string"]
+            deterministic: false
+            name: "deleteAttachmentFile"
+            method: function (fileName) {
+                var result = attachmentsFolder.removeFile(fileName);
+                console.log("deleteAttachmentFile:", result, "fileName:", fileName);
+            }
+        }
     }
 
     //--------------------------------------------------------------------------
@@ -402,12 +416,12 @@ Item {
     //--------------------------------------------------------------------------
     
     function createTables() {
-
         database.query("PRAGMA foreign_keys = ON;");
 
         database.query("CREATE TABLE IF NOT EXISTS Features (Status INTEGER, FeatureId TEXT UNIQUE, Timestamp NUMBER, LayerId NUMBER, TypeId TEXT, Feature TEXT)");
         database.query("CREATE TABLE IF NOT EXISTS Points (FeatureId TEXT, Timestamp NUMBER, Latitude NUMBER, Longitude NUMBER, Altitude NUMBER, FOREIGN KEY(FeatureId) REFERENCES Features(FeatureId) ON UPDATE CASCADE ON DELETE CASCADE)");
         database.query("CREATE TABLE IF NOT EXISTS Attachments (FeatureId TEXT, FileName TEXT, FOREIGN KEY(FeatureId) REFERENCES Features(FeatureId) ON UPDATE CASCADE ON DELETE CASCADE)");
+        database.query("CREATE TRIGGER IF NOT EXISTS DeleteAttachmentFiles BEFORE DELETE ON Attachments FOR EACH ROW BEGIN SELECT deleteAttachmentFile(OLD.FileName); END");
     }
     
     //--------------------------------------------------------------------------
@@ -738,13 +752,6 @@ Item {
     //--------------------------------------------------------------------------
 
     function deleteRow(rowId) {
-        var rowData = getFeatureRow(rowId);
-
-        rowData.attachments.forEach(function (fileName) {
-            var result = attachmentsFolder.removeFile(fileName);
-            console.log("Attachment deleted:", result, fileName);
-        });
-
         var query = database.query("DELETE FROM Features WHERE rowid = ?", rowId);
 
         console.log("rows deleted:", query.rowsAffected);
@@ -755,9 +762,6 @@ Item {
     //--------------------------------------------------------------------------
 
     function deleteAll() {
-        attachmentsFolder.removeFolder();
-        attachmentsFolder.makeFolder();
-
         var query = database.query("DELETE FROM Features");
 
         console.log("rows deleted:", query.rowsAffected);

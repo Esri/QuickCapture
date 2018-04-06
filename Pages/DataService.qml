@@ -16,6 +16,7 @@
 
 import QtQuick 2.9
 import QtQuick.Controls 1.4
+import QtPositioning 5.8
 
 import ArcGIS.AppFramework 1.0
 import ArcGIS.AppFramework.Sql 1.0
@@ -539,7 +540,9 @@ Item {
 
         var position = properties.position;
         if (!position) {
-            position = {};
+            position = {
+                coordinate: QtPositioning.coordinate()
+            };
         }
 
         function validValue(isValid, validValue, invalidValue) {

@@ -989,7 +989,17 @@ Item {
 
 
         var isPolygon = layer.geometryType === kGeometryPolygon;
-        if (isPolygon && count) {
+        var minCount = isPolygon ? 3 : 2;
+
+        if (count < minCount) {
+            console.warn("Isufficient points:", count, "<", minCount, "geometry:", layer.geometryType);
+
+            deleteRow(rowId);
+
+            return;
+        }
+
+        if (isPolygon) {
             console.log("Closing polygon");
             points.push(points[0]);
         }

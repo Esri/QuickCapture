@@ -5,7 +5,7 @@
         "backgroundLocation": true,
         "biometricAuthentication": false,
         "bluetooth": false,
-        "camera": false,
+        "camera": true,
         "fileSharing": true,
         "highAccuracyLocation": false,
         "localnotification": false,
@@ -13,7 +13,7 @@
         "microphone": false,
         "network": true,
         "storage": true,
-        "vibration": false
+        "vibration": true
     },
     "deployment": {
         "android": {

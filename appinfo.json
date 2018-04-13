@@ -72,7 +72,7 @@
     "resources": {
         "appIcon": "appicon.png",
         "launchImageBackground": "launchimage-background.png",
-        "launchImageBackgroundColor": "#6eb52a",
+        "launchImageBackgroundColor": "#77ba2f",
         "launchImageOverlay": "launchimage-overlay.png"
     },
     "type": "app",

@@ -65,13 +65,13 @@ Rectangle {
 
     Image {
         anchors.fill: parent
-        source: "../appicon.png"
-        fillMode: Image.PreserveAspectCrop
+        source: "../launchimage-overlay.png"
+        fillMode: Image.PreserveAspectFit
     }
 
     Rectangle {
         anchors.fill: parent
-        color: "#A0000000"
+        color: "#80000000"
     }
 
     ColumnLayout {

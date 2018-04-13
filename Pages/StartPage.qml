@@ -88,6 +88,7 @@ Rectangle {
                 family: app.fontFamily
                 pointSize: 30
                 bold: true
+                italic: true
             }
 
             color: "white"
@@ -103,6 +104,7 @@ Rectangle {
             font {
                 family: app.fontFamily
                 pointSize: 16
+                italic: true
             }
 
             color: "white"

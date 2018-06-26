@@ -45,7 +45,9 @@ PageView {
     property var lastInsertId
     property var currentPosition
 
+    property bool showPreview: showMap || featureButtonsPanel.useCamera
     property bool showMap: false
+
     property real directionSpeedThreshold: 0.5
 
     property color accuracyGoodColor: "green"
@@ -290,7 +292,7 @@ PageView {
                 left: parent.left
                 right: parent.right
                 top: parent.top
-                margins: 10 * AppFramework.displayScaleFactor
+                margins: 5 * AppFramework.displayScaleFactor
             }
 
             ColumnLayout {
@@ -359,7 +361,7 @@ PageView {
                 Layout.fillWidth: true
                 Layout.preferredHeight: 100 * AppFramework.displayScaleFactor
 
-                visible: false
+                visible: showPreview
 
                 Map {
                     id: map
@@ -367,7 +369,7 @@ PageView {
                     Layout.fillWidth: true
                     Layout.fillHeight: true
 
-                    visible: Networking.isOnline //&& showMap
+                    visible: Networking.isOnline && showMap
 
                     plugin: Plugin {
                         preferred: ["AppStudio"]
@@ -413,7 +415,7 @@ PageView {
                 }
 
                 Item {
-                    Layout.fillWidth: true
+                    Layout.preferredWidth: previewLayout.width / 3
                     Layout.fillHeight: true
 
                     visible: featureButtonsPanel.useCamera
@@ -443,8 +445,7 @@ PageView {
                     anchors.fill: parent
 
                     onPressAndHold: {
-                        previewLayout.visible = !previewLayout.visible;
-                        //                        map.visible = !map.visible;
+                        showMap = !showMap;
                     }
                 }
             }

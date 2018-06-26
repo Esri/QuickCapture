@@ -27,6 +27,7 @@ QtObject {
     property color textColor: "#fefefe"
     property color highlightColor: "#00b2ff"
     property color selectedColor: "#fefefe"
+    property color errorTextColor: "#FF0000"
 
     property color pageHeaderColor: "#303030"
     property color pageHeaderTextColor: "#fefefe"

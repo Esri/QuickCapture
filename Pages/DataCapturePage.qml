@@ -39,13 +39,12 @@ PageView {
     property DataService dataService
     property bool online
     property var coordinate: QtPositioning.coordinate()
-    property var coordinateInfo: Coordinate.convert(coordinate, "ddm")
     property color coordinateColor: theme.textColor
     property real horizontalAccuracy
     property var lastInsertId
     property var currentPosition
 
-    property bool showPreview: showMap || featureButtonsPanel.useCamera
+    property bool showPreview: (showMap && coordinate.isValid) || featureButtonsPanel.useCamera
     property bool showMap: false
 
     property real directionSpeedThreshold: 0.5
@@ -56,6 +55,8 @@ PageView {
 
     property real accuracyGoodThreshold: 10
     property real accuracyAlertThreshold: 100
+
+    property string coordinateFormat: "ddm"
 
     //--------------------------------------------------------------------------
 
@@ -86,6 +87,10 @@ PageView {
 
         if (options.backgroundColor) {
             backgroundFill.color = options.backgroundColor;
+        }
+
+        if (options.coordinateFormat > "") {
+            coordinateFormat = options.coordinateFormat.toLowerCase();
         }
 
 
@@ -127,6 +132,8 @@ PageView {
                 } else {
                     map.bearing = 0;
                 }
+            } else {
+                coordinateColor = theme.errorTextColor;
             }
         }
     }
@@ -369,7 +376,7 @@ PageView {
                     Layout.fillWidth: true
                     Layout.fillHeight: true
 
-                    visible: Networking.isOnline && showMap
+                    visible: Networking.isOnline && showMap && coordinate.isValid
 
                     plugin: Plugin {
                         preferred: ["AppStudio"]
@@ -434,7 +441,7 @@ PageView {
                 Layout.fillWidth: true
 
                 // ⇔ ⇕ ±
-                text: (coordinateInfo && coordinateInfo.ddm) ? qsTr("Lat <b>%1</b> Lon <b>%2</b> ± <b>%3</b> m").arg(coordinateInfo.ddm.latitudeText).arg(coordinateInfo.ddm.longitudeText).arg(horizontalAccuracy) : ""
+                text: formatCoordinate(coordinate, horizontalAccuracy)
                 color: coordinateColor
                 font {
                     pointSize: 14
@@ -573,6 +580,63 @@ PageView {
 
     function captureEndNotification(template) {
         captureNotification(qsTr("End %1").arg(template.name));
+    }
+
+    //--------------------------------------------------------------------------
+
+    function formatCoordinate(coordinate, horizontalAccuracy) {
+        if (!coordinate.isValid) {
+            return qsTr("<b>Location not available</b>");
+        }
+
+        // ⇔ ⇕ ±
+        var text;
+
+        switch (coordinateFormat) {
+        case "mgrs":
+            var mgrs = Coordinate.convert(coordinate, "mgrs").mgrs;
+            text = "MGRS <b>%1</b>".arg(mgrs.text);
+            break;
+
+        case "usng":
+            var usngOptions = {
+                spaces: true,
+                precision: 10
+            }
+
+            var usng = Coordinate.convert(coordinate, "mgrs", usngOptions).mgrs;
+            text = "USNG <b>%1</b>".arg(usng.text);
+            break;
+
+        case "utm":
+        case "utmups":
+        case "ups":
+            var universalGrid = Coordinate.convert(coordinate, "universalGrid").universalGrid;
+            text = "%1 <b>%2%3</b> <b>%4E</b> <b>%5N</b>".arg(universalGrid.type).arg(universalGrid.zone ? universalGrid.zone : "").arg(universalGrid.band).arg(Math.floor(universalGrid.easting).toString()).arg(Math.floor(universalGrid.northing).toString());
+            break;
+
+        case "dd":
+            var dd = Coordinate.convert(coordinate, "dd");
+            text = qsTr("Lat <b>%1</b> Lon <b>%2</b>").arg(dd.latitudeText).arg(dd.longitudeText)
+            break;
+
+        case "dms":
+            var dms = Coordinate.convert(coordinate, "dms");
+            text = qsTr("Lat <b>%1</b> Lon <b>%2</b>").arg(dms.latitudeText).arg(dms.longitudeText)
+            break;
+
+        case "ddm":
+        default:
+            var ddm = Coordinate.convert(coordinate, "ddm").ddm;
+            text = qsTr("Lat <b>%1</b> Lon <b>%2</b>").arg(ddm.latitudeText).arg(ddm.longitudeText)
+            break;
+        }
+
+        if (isFinite(horizontalAccuracy) && horizontalAccuracy > 0) {
+            text += " ± <b>%1</b> m".arg(horizontalAccuracy);
+        }
+
+        return text;
     }
 
     //--------------------------------------------------------------------------

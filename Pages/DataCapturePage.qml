@@ -612,7 +612,12 @@ PageView {
         case "utmups":
         case "ups":
             var universalGrid = Coordinate.convert(coordinate, "universalGrid").universalGrid;
-            text = "%1 <b>%2%3</b> <b>%4E</b> <b>%5N</b>".arg(universalGrid.type).arg(universalGrid.zone ? universalGrid.zone : "").arg(universalGrid.band).arg(Math.floor(universalGrid.easting).toString()).arg(Math.floor(universalGrid.northing).toString());
+            text = "%1 <b>%2%3</b> <b>%4E</b> <b>%5N</b>"
+            .arg(universalGrid.type)
+            .arg(universalGrid.zone ? universalGrid.zone : "")
+            .arg(universalGrid.band)
+            .arg(Math.floor(universalGrid.easting).toString())
+            .arg(Math.floor(universalGrid.northing).toString());
             break;
 
         case "dd":

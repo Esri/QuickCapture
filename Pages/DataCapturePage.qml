@@ -621,12 +621,12 @@ PageView {
             break;
 
         case "dd":
-            var dd = Coordinate.convert(coordinate, "dd");
+            var dd = Coordinate.convert(coordinate, "dd").dd;
             text = qsTr("Lat <b>%1</b> Lon <b>%2</b>").arg(dd.latitudeText).arg(dd.longitudeText)
             break;
 
         case "dms":
-            var dms = Coordinate.convert(coordinate, "dms");
+            var dms = Coordinate.convert(coordinate, "dms").dms;
             text = qsTr("Lat <b>%1</b> Lon <b>%2</b>").arg(dms.latitudeText).arg(dms.longitudeText)
             break;
 

@@ -77,6 +77,10 @@
     },
     "type": "app",
     "urlScheme": "arcgis-quickcapture",
+    "usageDescriptionKeys": {
+        "cameraUsageDescription": "QuickCapture uses the camera to take photos for use in the collected records.",
+        "locationWhenInUseUsageDescription": "QuickCapture uses your location when the app is in use to capture your current position for use in the collected records."
+    },
     "version": {
         "major": 1,
         "micro": 52

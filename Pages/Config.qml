@@ -25,6 +25,9 @@ QtObject {
     property bool captureVibrate: Vibration.supported
     property int captureSound: kSoundBeep
 
+    property bool autoUpload: false
+    property int autoUploadInterval: 30
+
     //--------------------------------------------------------------------------
 
     readonly property string kKeyCaptureVibrate: "captureVibrate"
@@ -33,6 +36,9 @@ QtObject {
     readonly property int kSoundNone: 0
     readonly property int kSoundBeep: 1
     readonly property int kSoundTextToSpeech: 2
+
+    readonly property string kKeyAutoUpload: "autoUpload"
+    readonly property string kKeyAutoUploadInterval: "autoUploadInterval"
 
     //--------------------------------------------------------------------------
 
@@ -45,13 +51,33 @@ QtObject {
     function read() {
         captureVibrate = settings.boolValue(kKeyCaptureVibrate, captureVibrate);
         captureSound = settings.numberValue(kKeyCaptureSound, captureSound);
+
+        autoUpload = settings.boolValue(kKeyAutoUpload, false);
+        autoUploadInterval = settings.numberValue(kKeyAutoUploadInterval, 30);
+
+        log();
     }
 
     //--------------------------------------------------------------------------
 
     function write () {
+        log();
+
         settings.setValue(kKeyCaptureVibrate, captureVibrate);
         settings.setValue(kKeyCaptureSound, captureSound);
+
+        settings.setValue(kKeyAutoUpload, autoUpload);
+        settings.setValue(kKeyAutoUploadInterval, autoUploadInterval);
+    }
+
+    //--------------------------------------------------------------------------
+
+    function log() {
+        console.log("Configuration:");
+        console.log("* captureVibrate:", captureVibrate);
+        console.log("* captureSound:", captureSound);
+        console.log("* autoUpload:", autoUpload);
+        console.log("* autoUploadInterval:", autoUploadInterval);
     }
 
     //--------------------------------------------------------------------------

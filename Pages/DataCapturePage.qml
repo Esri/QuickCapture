@@ -645,5 +645,19 @@ PageView {
     }
 
     //--------------------------------------------------------------------------
+
+    Timer {
+        running: config.autoUpload && Networking.isOnline && !portal.busy && !dataService.uploading && dataService.points > 0
+        interval: config.autoUploadInterval * 1000
+        repeat: true
+        triggeredOnStart: true
+
+        onTriggered: {
+            console.log("Auto upload triggered");
+            upload();
+        }
+    }
+
+    //--------------------------------------------------------------------------
 }
 

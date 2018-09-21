@@ -119,6 +119,50 @@ PageView {
                 }
             }
 
+            GroupBox {
+                Layout.fillWidth: true
+
+                title: qsTr("Auto upload");
+
+                ColumnLayout {
+                    anchors.fill: parent
+
+                    Switch {
+                        Layout.fillWidth: true
+
+                        text: qsTr("Enabled")
+                        checked: config.autoUpload
+
+                        onCheckedChanged: {
+                            config.autoUpload = checked;
+                        }
+                    }
+
+                    Text {
+                        Layout.fillWidth: true
+
+                        text: qsTr("Interval (seconds)")
+                        wrapMode: Text.WrapAtWordBoundaryOrAnywhere
+                    }
+
+                    TextField {
+                        Layout.fillWidth: true
+
+                        enabled: config.autoUpload
+                        text: config.autoUploadInterval
+                        validator: IntValidator {
+                            bottom: 1
+                        }
+
+                        inputMethodHints: Qt.ImhDigitsOnly
+
+                        onEditingFinished: {
+                            config.autoUploadInterval = Number(text);
+                        }
+                    }
+                }
+            }
+
             Item {
                 Layout.fillWidth: true
                 Layout.fillHeight: true

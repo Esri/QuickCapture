@@ -102,6 +102,14 @@ PageView {
         if (featureButtonsPanel.useCamera) {
             camera.cameraState = Camera.ActiveState;
         }
+
+        page.forceActiveFocus();
+    }
+
+    //--------------------------------------------------------------------------
+
+    onTitlePressAndHold: {
+        featureButtonsPanel.showKeys = !featureButtonsPanel.showKeys;
     }
 
     //--------------------------------------------------------------------------
@@ -356,6 +364,7 @@ PageView {
                         onEditingFinished: {
                             if (text.trim() > "") {
                                 tagInput.visible = false;
+                                page.forceActiveFocus();
                             }
                         }
                     }
@@ -657,6 +666,16 @@ PageView {
             if (!portal.busy && !dataService.uploading && dataService.points > 0) {
                 upload();
             }
+        }
+    }
+
+    //--------------------------------------------------------------------------
+
+    Keys.onPressed: {
+        if (event.key) {
+            console.log("onPressed key:", event.key, event.key.toString(16), "modifiers:", event.modifiers, event.modifiers.toString(16));
+
+            featureButtonsPanel.keyPressed(event);
         }
     }
 

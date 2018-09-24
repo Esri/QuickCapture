@@ -44,6 +44,12 @@ PageView {
 
     //--------------------------------------------------------------------------
 
+    onTitlePressAndHold: {
+        keyInfo.visible = !keyInfo.visible;
+    }
+
+    //--------------------------------------------------------------------------
+
     Rectangle {
         anchors.fill: parent
 
@@ -166,6 +172,14 @@ PageView {
             Item {
                 Layout.fillWidth: true
                 Layout.fillHeight: true
+            }
+
+            KeyInfo {
+                id: keyInfo
+
+                Layout.fillWidth: true
+
+                visible: false
             }
         }
     }

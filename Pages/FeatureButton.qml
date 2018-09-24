@@ -46,6 +46,9 @@ Button {
     property bool requiresTag: false
     property bool tagAvailable: false
 
+    property int key
+    property bool showKey: false
+
     //--------------------------------------------------------------------------
 
     signal addFeature(var button)
@@ -91,6 +94,18 @@ Button {
 
         if (options.captureImage) {
             captureImageIndicator.visible = true;
+        }
+
+        if (typeof options.key === "number") {
+            key = options.key;
+        } else if (options.key > "") {
+            var keyText = options.key.trim();
+            var code = Number.parseInt(keyText);
+            if (isFinite(code)) {
+                key = code;
+            } else if (keyText > " ") {
+                key = keyText.toUpperCase().charCodeAt(0);
+            }
         }
     }
 
@@ -151,6 +166,33 @@ Button {
             }
         }
 
+        Rectangle {
+            anchors {
+                left: parent.left
+                leftMargin: parent.border.width + 2 * AppFramework.displayScaleFactor
+                verticalCenter: parent.verticalCenter
+            }
+
+            width: keyText.paintedWidth + 4 * AppFramework.displayScaleFactor
+            height: keyText.paintedHeight + 4 * AppFramework.displayScaleFactor
+            opacity: 0.5
+
+            visible: showKey && key
+
+            color: "transparent"
+            radius: 2 * AppFramework.displayScaleFactor
+            border {
+                color: textColor
+                width: 1 * AppFramework.displayScaleFactor
+            }
+
+            Text {
+                id: keyText
+
+                anchors.centerIn: parent
+                text: (key > 32 && key <= 0xFFFF) ? String.fromCharCode(key) : "0x%1".arg(key.toString(16))
+            }
+        }
     }
 
     //--------------------------------------------------------------------------

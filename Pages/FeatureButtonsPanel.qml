@@ -35,6 +35,8 @@ GridLayout {
     property bool useCamera: false
     property bool tagAvailable: false
     property var buttonGroups: ({})
+    property var buttonKeys: ({})
+    property bool showKeys: false
 
     readonly property real columnWidth: (width - (columns - 1) * columnSpacing) / columns
 
@@ -74,6 +76,17 @@ GridLayout {
         });
 
         console.log("showTag:", showTag);
+    }
+
+    //--------------------------------------------------------------------------
+
+    function keyPressed(event) {
+        var buttonItem = buttonKeys[event.key];
+        if (!buttonItem) {
+            return;
+        }
+
+        buttonItem.clicked();
     }
 
     //--------------------------------------------------------------------------
@@ -221,6 +234,11 @@ GridLayout {
         if (layerItem.layerInfo.hasAttachments && options.captureImage && QtMultimedia.availableCameras.length > 0) {
             useCamera = true;
         }
+
+        if (buttonItem.key) {
+            console.log("Adding button key:", buttonItem.key, "name:", typeItem.name);
+            buttonKeys[buttonItem.key] = buttonItem;
+        }
     }
 
     //--------------------------------------------------------------------------
@@ -284,6 +302,7 @@ GridLayout {
         id: textButtonComponent
 
         FeatureTextButton {
+            showKey: showKeys
         }
     }
 
@@ -293,6 +312,7 @@ GridLayout {
         id: imageButtonComponent
 
         FeatureImageButton {
+            showKey: showKeys
         }
     }
 

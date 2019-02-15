@@ -978,6 +978,14 @@ Item {
                     continue;
                 }
 
+                lastX = x;
+                lastY = y;
+
+                if (x == 0 && y == 0) {
+                    console.log("Skipping 0, 0 coordinate:", x, y);
+                    continue;
+                }
+
                 var point = [x, y];
 
                 points.push(point);
@@ -992,14 +1000,9 @@ Item {
         var minCount = isPolygon ? 3 : 2;
 
         if (count < minCount) {
-            console.warn("Isufficient points:", count, "<", minCount, "geometry:", layer.geometryType);
-
-            deleteRow(rowId);
-
-            return;
-        }
-
-        if (isPolygon) {
+            console.warn("Insufficient points:", count, "<", minCount, "geometry:", layer.geometryType);
+            points = [];
+        } else if (isPolygon) {
             console.log("Closing polygon");
             points.push(points[0]);
         }
@@ -1008,15 +1011,21 @@ Item {
 
         //console.log("count:", count, "points:", JSON.striginfy(points));
 
-        var geometry = {
-            spatialReference: {
-                wkid: kWGS84
-            }
-        };
+        var geometry;
 
-        geometry[isPolygon ? "rings": "paths"] = [ points ];
+        if (points.length > 0) {
+            geometry = {
+                spatialReference: {
+                    wkid: kWGS84
+                }
+            };
+
+            geometry[isPolygon ? "rings": "paths"] = [ points ];
+
+        }
 
         feature.geometry = geometry;
+
         replaceVariables(layerId, feature.attributes, properties);
 
         console.log("End feature:", featureId, JSON.stringify(feature, undefined, 2));

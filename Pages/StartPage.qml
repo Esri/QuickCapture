@@ -180,11 +180,18 @@ Rectangle {
             enabled: !portal.busy
 
             onClicked: {
+                portal.signOut();
+
                 signedInCallback = function () {
                     start(true);
                 }
 
                 portal.signIn(undefined, true);
+            }
+
+            onPressAndHold: {
+                portal.signOut();
+                userInfo.clear();
             }
         }
 
